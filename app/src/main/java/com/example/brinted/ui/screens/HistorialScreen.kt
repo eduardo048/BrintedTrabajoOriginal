@@ -40,6 +40,7 @@ import com.example.brinted.ui.theme.Tipografia
 import com.example.brinted.ui.theme.VerdeVictoria
 import androidx.compose.ui.layout.ContentScale
 
+/** Pantalla de historial: lista partidas recientes y navega al detalle al pulsar. */
 @Composable
 fun HistorialScreen(
     partidas: List<PartidaResumen>,

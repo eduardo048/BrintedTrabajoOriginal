@@ -19,6 +19,7 @@ import com.example.brinted.ui.components.NoticiaCard
 import com.example.brinted.ui.theme.Fondo
 import com.example.brinted.ui.theme.Tipografia
 
+/** Pantalla de eSports: lista noticias y permite abrir la URL origen. */
 @Composable
 fun EsportsScreen(
     noticias: List<NoticiaEsport>,

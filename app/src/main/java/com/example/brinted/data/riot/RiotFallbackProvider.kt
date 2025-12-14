@@ -17,6 +17,7 @@ class RiotFallbackProvider(
     private val mock: RiotRepository = RiotRepositoryMock(),
     private val permitirFallback: Boolean = true
 ) {
+    /** Detalle de partida con intento remoto y respaldo mock. */
     suspend fun cargarDetalle(partidaId: String, region: String): ResultadoFallback<PartidaDetalle> {
         return cargaConFallback(
             remoto = { remoto.cargarDetallePartida(partidaId, region) },
@@ -24,6 +25,7 @@ class RiotFallbackProvider(
         )
     }
 
+    /** Carga todo el dashboard (dashboard, historial, análisis, campeones, noticias). */
     suspend fun cargarTodo(invocador: String, region: String): ResultadoFallback<DatosCompletos> {
         val dashboard = cargaConFallback(
             remoto = { remoto.cargarDashboard(invocador, region) },
@@ -60,6 +62,7 @@ class RiotFallbackProvider(
         )
     }
 
+    /** Helper para intentar remoto y caer a mock si se permite. */
     private suspend fun <T> cargaConFallback(
         remoto: suspend () -> T,
         respaldo: suspend () -> T

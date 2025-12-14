@@ -26,6 +26,7 @@ import com.example.brinted.ui.theme.GrisTexto
 import com.example.brinted.ui.theme.Morado
 import com.example.brinted.ui.theme.Tipografia
 
+/** Campos de texto reutilizables para formularios (correo, contraseña, etc.). */
 @Composable
 fun BotonPrimario(
     texto: String,

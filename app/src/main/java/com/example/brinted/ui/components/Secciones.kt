@@ -37,6 +37,7 @@ import com.example.brinted.ui.theme.Tarjeta
 import com.example.brinted.ui.theme.Tipografia
 import com.example.brinted.ui.theme.VerdeVictoria
 
+/** Componentes reutilizables: secciones, tarjetas de stats, partidas, campeones y noticias. */
 @Composable
 fun SeccionTitulo(titulo: String, modifier: Modifier = Modifier) {
     Text(

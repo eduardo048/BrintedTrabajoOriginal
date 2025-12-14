@@ -42,6 +42,7 @@ import com.example.brinted.ui.theme.RojoDerrota
 import com.example.brinted.ui.theme.Tipografia
 import com.example.brinted.ui.theme.VerdeVictoria
 
+/** Detalle de partida: muestra resumen de equipos, daño y métricas globales. */
 @Composable
 fun PartidaDetalleScreen(detalle: PartidaDetalle?, onBack: () -> Unit) {
     val data = detalle ?: MockData.detalleDemo

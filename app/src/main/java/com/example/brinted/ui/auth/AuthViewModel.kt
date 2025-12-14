@@ -32,6 +32,7 @@ class AuthViewModel(
         }
     }
 
+    /** Inicia sesión con correo y contraseña. */
     fun iniciarSesion(correo: String, contrasena: String) {
         viewModelScope.launch {
             _estado.update { it.copy(cargando = true, error = null) }
@@ -45,6 +46,7 @@ class AuthViewModel(
         }
     }
 
+    /** Registra usuario nuevo y guarda perfil en Firestore. */
     fun registrar(correo: String, contrasena: String, invocador: String) {
         viewModelScope.launch {
             _estado.update { it.copy(cargando = true, error = null) }
@@ -58,6 +60,7 @@ class AuthViewModel(
         }
     }
 
+    /** Cierra sesión en Firebase Auth y limpia estado local. */
     fun cerrarSesion() {
         authRepository.cerrarSesion()
         _estado.update { AuthUiState() }

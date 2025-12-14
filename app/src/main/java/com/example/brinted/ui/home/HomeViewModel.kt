@@ -38,6 +38,7 @@ class HomeViewModel(
     private val _estado = MutableStateFlow(DatosUiState())
     val estado: StateFlow<DatosUiState> = _estado.asStateFlow()
 
+    /** Carga el dashboard completo del invocador (Riot o mock si falla). */
     fun cargarTodo(invocador: String, region: String = "euw1") {
         viewModelScope.launch {
             _estado.update { it.copy(cargando = true, error = null) }
@@ -61,6 +62,7 @@ class HomeViewModel(
         }
     }
 
+    /** Refresca el estado global con el resultado obtenido, avisando si es mock. */
     private fun actualizarEstado(resultado: ResultadoFallback<DatosCompletos>) {
         val mensaje = if (resultado.usandoMock) {
             "Mostrando datos de prueba por fallo con Riot/Functions"
@@ -83,6 +85,7 @@ class HomeViewModel(
         }
     }
 
+    /** Carga el detalle de una partida; usa mock si falla el remoto. */
     fun cargarDetalle(partidaId: String, region: String = "euw1") {
         viewModelScope.launch {
             _estado.update { it.copy(detalleCargando = true, detalleError = null) }

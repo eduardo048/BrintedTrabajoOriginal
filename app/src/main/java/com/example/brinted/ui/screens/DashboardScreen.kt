@@ -54,6 +54,7 @@ import com.example.brinted.ui.theme.Tipografia
 import androidx.compose.foundation.lazy.items as listItems
 import androidx.compose.foundation.lazy.grid.items as gridItems
 
+/** Pantalla de Inicio/Dashboard con resumen del invocador y menú de opciones. */
 @Composable
 fun DashboardScreen(
     estado: DatosUiState = DatosUiState(),

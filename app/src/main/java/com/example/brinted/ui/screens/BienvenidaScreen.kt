@@ -31,11 +31,16 @@ import com.example.brinted.ui.components.BotonSecundario
 import com.example.brinted.ui.theme.GradienteInferior
 import com.example.brinted.ui.theme.GradienteSuperior
 
+/**
+ * Pantalla de bienvenida: fondo degradado, título y acceso a login/registro.
+ * Ajusta barras de sistema al gradiente para evitar bordes blancos.
+ */
 @Composable
 fun BienvenidaScreen(
     onLogin: () -> Unit,
     onRegistro: () -> Unit
 ){
+    // Ajusta colores de status/nav bar al gradiente de fondo
     val systemUiController = rememberSystemUiController()
     SideEffect {
         systemUiController.setStatusBarColor(GradienteSuperior, darkIcons = false)
@@ -76,6 +81,7 @@ fun BienvenidaScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Empuja el contenido hacia la parte superior media
             Spacer(modifier = Modifier.weight(0.8f))
             Card(
                 shape = RoundedCornerShape(26.dp),
@@ -100,11 +106,13 @@ fun BienvenidaScreen(
                 }
             }
             Spacer(modifier = Modifier.height(28.dp))
+            // Botón de inicio de sesión
             BotonPrimario(
                 texto = "Iniciar sesión",
                 modifier = Modifier.fillMaxWidth()
             ) { onLogin() }
             Spacer(modifier = Modifier.height(12.dp))
+            // Botón para crear cuenta
             BotonSecundario(
                 texto = "Crear cuenta",
                 modifier = Modifier.fillMaxWidth()

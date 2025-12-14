@@ -35,6 +35,7 @@ import com.example.brinted.ui.theme.GrisTexto
 import com.example.brinted.ui.theme.Tarjeta
 import com.example.brinted.ui.theme.Tipografia
 
+/** Pantalla de inicio de sesión con campos de correo y contraseña. */
 @Composable
 fun LoginScreen(
     cargando: Boolean,

@@ -36,6 +36,7 @@ import com.example.brinted.ui.theme.GrisTexto
 import com.example.brinted.ui.theme.Tarjeta
 import com.example.brinted.ui.theme.Tipografia
 
+/** Pantalla de registro: correo, contraseña y nombre de invocador. */
 @Composable
 fun RegistroScreen(
     cargando: Boolean,

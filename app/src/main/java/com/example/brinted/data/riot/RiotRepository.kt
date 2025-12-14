@@ -12,6 +12,9 @@ import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
+/**
+ * Contrato de acceso a datos Riot (remoto o mock).
+ */
 interface RiotRepository {
     suspend fun cargarDashboard(invocador: String, region: String): DashboardResumen
     suspend fun cargarHistorial(invocador: String, region: String): List<PartidaResumen>
@@ -21,6 +24,9 @@ interface RiotRepository {
     suspend fun cargarDetallePartida(partidaId: String, region: String): PartidaDetalle
 }
 
+/**
+ * Implementación remota que consume Cloud Functions (riotProxy) vía Retrofit.
+ */
 class RiotRepositoryRemoto(
     private val service: RiotFunctionsService
 ) : RiotRepository {
@@ -42,6 +48,9 @@ class RiotRepositoryRemoto(
         service.detalle(region, partidaId)
 }
 
+/**
+ * Implementación mock que devuelve datos locales para pruebas/fallback.
+ */
 class RiotRepositoryMock : RiotRepository {
     override suspend fun cargarDashboard(invocador: String, region: String): DashboardResumen =
         withContext(Dispatchers.Default) { MockData.dashboard }
@@ -62,6 +71,9 @@ class RiotRepositoryMock : RiotRepository {
         withContext(Dispatchers.Default) { MockData.detallePorId(partidaId) }
 }
 
+/**
+ * Crea la instancia adecuada según la configuración (remoto o mock).
+ */
 object RiotRepositoryFactory {
     fun crear(baseUrl: String?, usarMock: Boolean = false): RiotRepository {
         if (usarMock || baseUrl.isNullOrBlank()) return RiotRepositoryMock()

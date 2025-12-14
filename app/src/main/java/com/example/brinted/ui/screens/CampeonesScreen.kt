@@ -36,6 +36,7 @@ import com.example.brinted.ui.theme.Tipografia
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
 
+/** Pantalla de campeones: muestra los campeones más jugados con WR y partidas. */
 @Composable
 fun CampeonesScreen(
     campeones: List<CampeonDetalle>,

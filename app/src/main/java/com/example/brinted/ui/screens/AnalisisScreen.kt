@@ -40,6 +40,10 @@ import com.example.brinted.ui.theme.GrisTexto
 import com.example.brinted.ui.theme.Morado
 import com.example.brinted.ui.theme.Tipografia
 
+/**
+ * Pantalla de análisis: muestra gráfica de KDA reciente y métricas clave.
+ * Usa datos de HomeViewModel (API Riot o MockData como respaldo).
+ */
 @Composable
 fun AnalisisScreen(
     analisis: AnalisisResumen?,
