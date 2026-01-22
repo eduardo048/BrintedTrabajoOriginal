@@ -1,16 +1,11 @@
 package com.example.brinted.ui.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.brinted.data.model.AnalisisResumen
-import com.example.brinted.data.model.CampeonDetalle
-import com.example.brinted.data.model.DashboardResumen
-import com.example.brinted.data.model.NoticiaEsport
-import com.example.brinted.data.model.PartidaDetalle
-import com.example.brinted.data.model.PartidaResumen
-import com.example.brinted.data.riot.RiotFallbackProvider
-import com.example.brinted.data.riot.ResultadoFallback
+import com.example.brinted.data.model.*
+import com.example.brinted.data.riot.RiotRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,101 +18,79 @@ data class DatosUiState(
     val analisis: AnalisisResumen? = null,
     val campeones: List<CampeonDetalle> = emptyList(),
     val noticias: List<NoticiaEsport> = emptyList(),
-    val detallePartida: PartidaDetalle? = null,
-    val detalleCargando: Boolean = false,
-    val detalleError: String? = null,
     val cargando: Boolean = false,
     val error: String? = null,
-    val avisoMock: String? = null
+    val avisoMock: String? = null,
+    val detallePartida: PartidaDetalle? = null,
+    val detalleCargando: Boolean = false,
+    val detalleError: String? = null
 )
 
-class HomeViewModel(
-    private val riotProvider: RiotFallbackProvider
-) : ViewModel() {
+class HomeViewModel(private val riotRepository: RiotRepository) : ViewModel() {
 
     private val _estado = MutableStateFlow(DatosUiState())
     val estado: StateFlow<DatosUiState> = _estado.asStateFlow()
 
-    /** Carga el dashboard completo del invocador (Riot o mock si falla). */
-    fun cargarTodo(invocador: String, region: String = "euw1") {
+    fun cargarTodo(invocador: String, region: String) {
+        Log.d("BRINTED_DEBUG", "Iniciando carga para: $invocador en $region")
         viewModelScope.launch {
             _estado.update { it.copy(cargando = true, error = null) }
-            val resultadoPrimero = runCatching { riotProvider.cargarTodo(invocador, region) }
-            if (resultadoPrimero.isSuccess) {
-                actualizarEstado(resultadoPrimero.getOrThrow())
-            } else {
-                // Reintento automático si falló la llamada
-                val resultadoReintento = runCatching { riotProvider.cargarTodo(invocador, region) }
-                if (resultadoReintento.isSuccess) {
-                    actualizarEstado(resultadoReintento.getOrThrow())
-                } else {
-                    _estado.update {
-                        it.copy(
-                            cargando = false,
-                            error = "No se pudo conectar con la API de Riot. Intenta de nuevo en unos segundos."
-                        )
-                    }
+            
+            try {
+                val dashboard = riotRepository.cargarDashboard(invocador, region)
+                val historial = riotRepository.cargarHistorial(invocador, region)
+                val analisis = riotRepository.cargarAnalisis(invocador, region)
+                val campeones = riotRepository.cargarCampeones(invocador, region)
+                val noticias = riotRepository.cargarNoticias()
+                actualizarEstado(
+                    DatosCompletos(
+                        dashboard = dashboard,
+                        historial = historial,
+                        analisis = analisis,
+                        campeones = campeones,
+                        noticias = noticias
+                    )
+                )
+            } catch (e: Exception) {
+                Log.e("BRINTED_DEBUG", "ERROR CRÍTICO EN CARGAR_TODO", e)
+                _estado.update {
+                    it.copy(
+                        cargando = false,
+                        error = "Error: ${e.localizedMessage ?: "Fallo de conexión"}"
+                    )
                 }
             }
         }
     }
 
-    /** Refresca el estado global con el resultado obtenido, avisando si es mock. */
-    private fun actualizarEstado(resultado: ResultadoFallback<DatosCompletos>) {
-        val mensaje = if (resultado.usandoMock) {
-            "Mostrando datos de prueba por fallo con Riot/Functions"
-        } else {
-            "Datos actualizados desde Riot"
-        }
+    private fun actualizarEstado(resultado: DatosCompletos) {
         _estado.update {
             it.copy(
-                dashboard = resultado.dato.dashboard,
-                historial = resultado.dato.historial,
-                analisis = resultado.dato.analisis,
-                campeones = resultado.dato.campeones,
-                noticias = resultado.dato.noticias,
+                dashboard = resultado.dashboard,
+                historial = resultado.historial,
+                analisis = resultado.analisis,
+                campeones = resultado.campeones,
+                noticias = resultado.noticias,
                 cargando = false,
-                detallePartida = null,
-                detalleCargando = false,
-                detalleError = null,
-                avisoMock = mensaje
+                avisoMock = null
             )
         }
     }
 
-    /** Carga el detalle de una partida; usa mock si falla el remoto. */
-    fun cargarDetalle(partidaId: String, region: String = "euw1") {
+    fun cargarDetalle(partidaId: String, region: String, invocador: String) {
         viewModelScope.launch {
-            _estado.update { it.copy(detalleCargando = true, detalleError = null) }
-            val resultado = runCatching { riotProvider.cargarDetalle(partidaId, region) }
-            resultado.fold(
-                onSuccess = { res ->
-                    _estado.update {
-                        it.copy(
-                            detallePartida = res.dato,
-                            detalleCargando = false,
-                            detalleError = if (res.usandoMock) "Mostrando datos de prueba por fallo con Riot/Functions" else null,
-                            avisoMock = if (res.usandoMock) "Mostrando datos de prueba por fallo con Riot/Functions" else it.avisoMock
-                        )
-                    }
-                },
-                onFailure = {
-                    _estado.update {
-                        it.copy(
-                            detalleCargando = false,
-                            detalleError = "No se pudo cargar el detalle de la partida. Intenta de nuevo."
-                        )
-                    }
-                }
-            )
+            _estado.update { it.copy(detalleCargando = true, detallePartida = null) }
+            runCatching { riotRepository.cargarDetallePartida(partidaId, region, invocador) }
+                .onSuccess { res -> _estado.update { it.copy(detallePartida = res, detalleCargando = false) } }
+                .onFailure { e -> _estado.update { it.copy(detalleError = e.message, detalleCargando = false) } }
         }
     }
 
     companion object {
-        fun factory(provider: RiotFallbackProvider): ViewModelProvider.Factory =
+        fun factory(provider: RiotRepository): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    @Suppress("UNCHECKED_CAST")
                     return HomeViewModel(provider) as T
                 }
             }

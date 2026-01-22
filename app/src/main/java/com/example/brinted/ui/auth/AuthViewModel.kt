@@ -12,66 +12,61 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class AuthUiState(
+    val usuario: Usuario? = null,
     val cargando: Boolean = false,
-    val error: String? = null,
-    val usuario: Usuario? = null
+    val error: String? = null
 )
 
-class AuthViewModel(
-    private val authRepository: AuthRepository
-) : ViewModel() {
+class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
 
     private val _estado = MutableStateFlow(AuthUiState())
     val estado: StateFlow<AuthUiState> = _estado.asStateFlow()
 
     init {
         viewModelScope.launch {
-            authRepository.estadoSesion.collect { usuario ->
-                _estado.update { it.copy(usuario = usuario, cargando = false, error = null) }
+            repository.estadoSesion.collect { user ->
+                _estado.update { it.copy(usuario = user) }
             }
         }
     }
 
-    /** Inicia sesión con correo y contraseña. */
+    fun registrar(correo: String, contrasena: String, invocador: String, region: String) {
+        if (correo.isBlank() || contrasena.isBlank() || invocador.isBlank()) {
+            _estado.update { it.copy(error = "Por favor, completa todos los campos.") }
+            return
+        }
+
+        viewModelScope.launch {
+            _estado.update { it.copy(cargando = true, error = null) }
+            val res = repository.registrar(correo, contrasena, invocador, region)
+            res.fold(
+                onSuccess = { _estado.update { it.copy(cargando = false) } },
+                onFailure = { e -> _estado.update { it.copy(cargando = false, error = e.message) } }
+            )
+        }
+    }
+
     fun iniciarSesion(correo: String, contrasena: String) {
         viewModelScope.launch {
             _estado.update { it.copy(cargando = true, error = null) }
-            val resultado = authRepository.iniciarSesion(correo, contrasena)
-            _estado.update {
-                resultado.fold(
-                    onSuccess = { usuario -> it.copy(cargando = false, usuario = usuario, error = null) },
-                    onFailure = { error -> it.copy(cargando = false, error = error.message) }
-                )
-            }
+            val res = repository.iniciarSesion(correo, contrasena)
+            res.fold(
+                onSuccess = { _estado.update { it.copy(cargando = false) } },
+                onFailure = { e -> _estado.update { it.copy(cargando = false, error = e.message) } }
+            )
         }
     }
 
-    /** Registra usuario nuevo y guarda perfil en Firestore. */
-    fun registrar(correo: String, contrasena: String, invocador: String) {
-        viewModelScope.launch {
-            _estado.update { it.copy(cargando = true, error = null) }
-            val resultado = authRepository.registrar(correo, contrasena, invocador)
-            _estado.update {
-                resultado.fold(
-                    onSuccess = { usuario -> it.copy(cargando = false, usuario = usuario, error = null) },
-                    onFailure = { error -> it.copy(cargando = false, error = error.message) }
-                )
-            }
-        }
-    }
-
-    /** Cierra sesión en Firebase Auth y limpia estado local. */
     fun cerrarSesion() {
-        authRepository.cerrarSesion()
-        _estado.update { AuthUiState() }
+        repository.cerrarSesion()
     }
 
     companion object {
-        fun factory(repo: AuthRepository): ViewModelProvider.Factory =
+        fun factory(repository: AuthRepository): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     @Suppress("UNCHECKED_CAST")
-                    return AuthViewModel(repo) as T
+                    return AuthViewModel(repository) as T
                 }
             }
     }

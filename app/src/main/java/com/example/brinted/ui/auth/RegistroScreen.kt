@@ -2,26 +2,14 @@ package com.example.brinted.ui.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,23 +19,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.brinted.ui.components.BotonPrimario
 import com.example.brinted.ui.components.CampoFormulario
+import com.example.brinted.ui.components.SelectorRegion
 import com.example.brinted.ui.theme.Fondo
 import com.example.brinted.ui.theme.GrisTexto
 import com.example.brinted.ui.theme.Tarjeta
 import com.example.brinted.ui.theme.Tipografia
 
-/** Pantalla de registro: correo, contraseña y nombre de invocador. */
 @Composable
 fun RegistroScreen(
     cargando: Boolean,
     error: String?,
     onBack: () -> Unit,
-    onRegistro: (String, String, String) -> Unit,
+    onRegistro: (String, String, String, String) -> Unit,
     onYaTengoCuenta: () -> Unit
 ) {
     val correo = remember { mutableStateOf("") }
     val contrasena = remember { mutableStateOf("") }
     val invocador = remember { mutableStateOf("") }
+    val region = remember { mutableStateOf("euw1") }
 
     Column(
         modifier = Modifier
@@ -66,10 +55,7 @@ fun RegistroScreen(
             colors = CardDefaults.cardColors(containerColor = Tarjeta),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-            ) {
+            Column(modifier = Modifier.padding(16.dp)) {
                 Text("Correo electrónico", style = Tipografia.bodyMedium, color = GrisTexto)
                 Spacer(modifier = Modifier.height(6.dp))
                 CampoFormulario(
@@ -91,29 +77,53 @@ fun RegistroScreen(
                     esPassword = true
                 )
                 Spacer(modifier = Modifier.height(14.dp))
-                Text("Nombre de invocador", style = Tipografia.bodyMedium, color = GrisTexto)
+                Text("Nombre de usuario (Riot ID)", style = Tipografia.bodyMedium, color = GrisTexto)
                 Spacer(modifier = Modifier.height(6.dp))
                 CampoFormulario(
                     valor = invocador.value,
                     onValueChange = { invocador.value = it },
-                    label = "Invocador",
-                    placeholder = "TuNombreDeInvocador",
+                    label = "Tu nombre",
+                    placeholder = "Ej: Faker",
                     leading = { Icon(Icons.Outlined.Person, null, tint = GrisTexto) }
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = "Necesitamos tu nombre de invocador para descargar tus estadísticas de juego.",
-                    style = Tipografia.bodyMedium,
-                    color = GrisTexto
+                Spacer(modifier = Modifier.height(14.dp))
+                Text("Región", style = Tipografia.bodyMedium, color = GrisTexto)
+                Spacer(modifier = Modifier.height(6.dp))
+                SelectorRegion(
+                    regionSeleccionada = region.value,
+                    onRegionSelected = { region.value = it }
                 )
+                
                 Spacer(modifier = Modifier.height(18.dp))
                 if (error != null) {
                     Text(error, color = Color.Red, style = Tipografia.bodyMedium)
                     Spacer(modifier = Modifier.height(8.dp))
                 }
+                
                 BotonPrimario(texto = if (cargando) "Registrando..." else "Registrarse") {
                     if (!cargando) {
-                        onRegistro(correo.value.trim(), contrasena.value, invocador.value.trim())
+                        // Juntamos el nombre con el tag según la región
+                        val tag = when(region.value) {
+                            "euw1" -> "EUW"
+                            "eun1" -> "EUNE"
+                            "na1" -> "NA"
+                            "br1" -> "BR"
+                            "la1" -> "LAN"
+                            "la2" -> "LAS"
+                            "kr" -> "KR"
+                            "jp1" -> "JP"
+                            "tr1" -> "TR"
+                            "ru" -> "RU"
+                            "oc1" -> "OCE"
+                            else -> region.value.uppercase()
+                        }
+                        val riotIdCompleto = if (invocador.value.contains("#")) {
+                            invocador.value.trim() 
+                        } else {
+                            "${invocador.value.trim()}#$tag"
+                        }
+                        
+                        onRegistro(correo.value.trim(), contrasena.value, riotIdCompleto, region.value)
                     }
                 }
                 Spacer(modifier = Modifier.height(12.dp))

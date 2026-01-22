@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,12 +24,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.brinted.data.mock.MockData
 import com.example.brinted.data.model.CampeonDetalle
 import com.example.brinted.ui.theme.Fondo
 import com.example.brinted.ui.theme.FondoElevado
 import com.example.brinted.ui.theme.GrisTexto
-import com.example.brinted.ui.theme.Morado
 import com.example.brinted.ui.theme.Tipografia
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
@@ -42,7 +38,6 @@ fun CampeonesScreen(
     campeones: List<CampeonDetalle>,
     cargando: Boolean
 ) {
-    val lista = if (campeones.isNotEmpty()) campeones else MockData.campeonesDemo
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,7 +56,7 @@ fun CampeonesScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(lista) { campeon ->
+            items(campeones) { campeon ->
                 Card(
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = FondoElevado)
@@ -121,7 +116,6 @@ fun CampeonesScreen(
                                 Text("Partidas jugadas", style = Tipografia.bodyMedium, color = GrisTexto)
                                 Text("${campeon.partidas}", style = Tipografia.bodyLarge, color = Color.White)
                             }
-                            Spacer(modifier = Modifier)
                         }
                     }
                 }

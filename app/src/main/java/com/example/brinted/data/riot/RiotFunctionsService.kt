@@ -9,47 +9,45 @@ import com.example.brinted.data.model.PartidaResumen
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-/**
- * Servicio HTTP que apunta al proxy de Cloud Functions.
- * Cada endpoint corresponde a una ruta expuesta en riotProxy.
- */
+// Definición de la interfaz para las funciones de Riot utilizando Retrofit
 interface RiotFunctionsService {
-    /** Resumen principal del invocador (dashboard). */
+    // Función para obtener el resumen del dashboard de un invocador
     @GET("dashboard")
     suspend fun dashboard(
         @Query("region") region: String,
         @Query("invocador") invocador: String
     ): DashboardResumen
 
-    /** Historial de partidas recientes. */
+    // Función para obtener el historial de partidas de un invocador
     @GET("historial")
     suspend fun historial(
         @Query("region") region: String,
         @Query("invocador") invocador: String
     ): List<PartidaResumen>
 
-    /** Bloque de análisis de rendimiento. */
+    // Función para obtener el análisis de un invocador
     @GET("analisis")
     suspend fun analisis(
         @Query("region") region: String,
         @Query("invocador") invocador: String
     ): AnalisisResumen
 
-    /** Campeones más jugados con sus métricas. */
+    // Función para obtener los detalles de los campeones de un invocador
     @GET("campeones")
     suspend fun campeones(
         @Query("region") region: String,
         @Query("invocador") invocador: String
     ): List<CampeonDetalle>
 
-    /** Noticias de eSports. */
+    // Función para obtener las noticias de esports
     @GET("noticias")
     suspend fun noticias(): List<NoticiaEsport>
 
-    /** Detalle de una partida específica. */
+    // Función para obtener los detalles de una partida específica
     @GET("detalle")
     suspend fun detalle(
         @Query("region") region: String,
-        @Query("partidaId") partidaId: String
+        @Query("partidaId") partidaId: String,
+        @Query("invocador") invocador: String
     ): PartidaDetalle
 }

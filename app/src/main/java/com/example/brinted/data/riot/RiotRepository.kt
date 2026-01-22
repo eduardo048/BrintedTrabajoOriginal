@@ -1,88 +1,50 @@
 package com.example.brinted.data.riot
 
-import com.example.brinted.data.mock.MockData
-import com.example.brinted.data.model.AnalisisResumen
-import com.example.brinted.data.model.CampeonDetalle
-import com.example.brinted.data.model.DashboardResumen
-import com.example.brinted.data.model.NoticiaEsport
-import com.example.brinted.data.model.PartidaDetalle
-import com.example.brinted.data.model.PartidaResumen
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.example.brinted.data.model.*
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-/**
- * Contrato de acceso a datos Riot (remoto o mock).
- */
+// Definición de la interfaz del repositorio
 interface RiotRepository {
-    suspend fun cargarDashboard(invocador: String, region: String): DashboardResumen
-    suspend fun cargarHistorial(invocador: String, region: String): List<PartidaResumen>
-    suspend fun cargarAnalisis(invocador: String, region: String): AnalisisResumen
-    suspend fun cargarCampeones(invocador: String, region: String): List<CampeonDetalle>
-    suspend fun cargarNoticias(): List<NoticiaEsport>
-    suspend fun cargarDetallePartida(partidaId: String, region: String): PartidaDetalle
+    suspend fun cargarDashboard(invocador: String, region: String): DashboardResumen // Cambiado a DashboardResumen
+    suspend fun cargarHistorial(invocador: String, region: String): List<PartidaResumen> // Cambiado a PartidaResumen
+    suspend fun cargarAnalisis(invocador: String, region: String): AnalisisResumen // Cambiado a AnalisisResumen
+    suspend fun cargarCampeones(invocador: String, region: String): List<CampeonDetalle> // Cambiado a CampeonDetalle
+    suspend fun cargarNoticias(): List<NoticiaEsport> // Cambiado a NoticiaEsport
+    suspend fun cargarDetallePartida(partidaId: String, region: String, invocador: String): PartidaDetalle // Cambiado a PartidaDetalle
 }
 
-/**
- * Implementación remota que consume Cloud Functions (riotProxy) vía Retrofit.
- */
-class RiotRepositoryRemoto(
-    private val service: RiotFunctionsService
-) : RiotRepository {
-    override suspend fun cargarDashboard(invocador: String, region: String): DashboardResumen =
-        service.dashboard(region, invocador)
-
-    override suspend fun cargarHistorial(invocador: String, region: String): List<PartidaResumen> =
-        service.historial(region, invocador)
-
-    override suspend fun cargarAnalisis(invocador: String, region: String): AnalisisResumen =
-        service.analisis(region, invocador)
-
-    override suspend fun cargarCampeones(invocador: String, region: String): List<CampeonDetalle> =
-        service.campeones(region, invocador)
-
-    override suspend fun cargarNoticias(): List<NoticiaEsport> = service.noticias()
-
-    override suspend fun cargarDetallePartida(partidaId: String, region: String): PartidaDetalle =
-        service.detalle(region, partidaId)
+// Implementación del repositorio que utiliza Retrofit para llamadas de red
+class RiotRepositoryRemoto(private val service: RiotFunctionsService) : RiotRepository {
+    override suspend fun cargarDashboard(invocador: String, region: String) = service.dashboard(region, invocador) // Retorna DashboardResumen
+    override suspend fun cargarHistorial(invocador: String, region: String) = service.historial(region, invocador) // Retorna List<PartidaResumen>
+    override suspend fun cargarAnalisis(invocador: String, region: String) = service.analisis(region, invocador) // Retorna AnalisisResumen
+    override suspend fun cargarCampeones(invocador: String, region: String) = service.campeones(region, invocador) // Retorna List<CampeonDetalle>
+    override suspend fun cargarNoticias() = service.noticias() // Retorna List<NoticiaEsport>
+    override suspend fun cargarDetallePartida(partidaId: String, region: String, invocador: String) =  // Retorna PartidaDetalle
+        service.detalle(region, partidaId, invocador) // Retorna PartidaDetalle
 }
 
-/**
- * Implementación mock que devuelve datos locales para pruebas/fallback.
- */
-class RiotRepositoryMock : RiotRepository {
-    override suspend fun cargarDashboard(invocador: String, region: String): DashboardResumen =
-        withContext(Dispatchers.Default) { MockData.dashboard }
-
-    override suspend fun cargarHistorial(invocador: String, region: String): List<PartidaResumen> =
-        withContext(Dispatchers.Default) { MockData.partidasDemo }
-
-    override suspend fun cargarAnalisis(invocador: String, region: String): AnalisisResumen =
-        withContext(Dispatchers.Default) { MockData.analisisDemo }
-
-    override suspend fun cargarCampeones(invocador: String, region: String): List<CampeonDetalle> =
-        withContext(Dispatchers.Default) { MockData.campeonesDemo }
-
-    override suspend fun cargarNoticias(): List<NoticiaEsport> =
-        withContext(Dispatchers.Default) { MockData.noticiasDemo }
-
-    override suspend fun cargarDetallePartida(partidaId: String, region: String): PartidaDetalle =
-        withContext(Dispatchers.Default) { MockData.detallePorId(partidaId) }
-}
-
-/**
- * Crea la instancia adecuada según la configuración (remoto o mock).
- */
+// Fábrica para crear instancias del repositorio
 object RiotRepositoryFactory {
-    fun crear(baseUrl: String?, usarMock: Boolean = false): RiotRepository {
-        if (usarMock || baseUrl.isNullOrBlank()) return RiotRepositoryMock()
-        val base = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
-        val finalBase = base + "riotProxy/"
+    // Método para crear una instancia del repositorio con configuración de red
+    fun crear(baseUrl: String?): RiotRepository {
+        val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build() // Configuración de Moshi con soporte para Kotlin
+        val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY } // Interceptor para logging de solicitudes HTTP
+        val client = OkHttpClient.Builder().addInterceptor(logging).build() // Cliente HTTP con interceptor de logging
+        val finalBase = if (baseUrl?.endsWith("/") == true) baseUrl else "$baseUrl/" // Asegura que la URL base termine con "/"
+
+        // Construcción de Retrofit con la URL base, cliente HTTP y convertidor Moshi
         val retrofit = Retrofit.Builder()
-            .baseUrl(finalBase)
-            .addConverterFactory(MoshiConverterFactory.create())
-            .build()
-        return RiotRepositoryRemoto(retrofit.create(RiotFunctionsService::class.java))
+            .baseUrl(finalBase) // Establece la URL base
+            .client(client) // Establece el cliente HTTPs
+            .addConverterFactory(MoshiConverterFactory.create(moshi)) // Agrega el convertidor Moshi
+            .build() // Construye la instancia de Retrofit
+            
+        return RiotRepositoryRemoto(retrofit.create(RiotFunctionsService::class.java)) // Crea y retorna la instancia del repositorio remoto
     }
 }

@@ -1,13 +1,17 @@
 package com.example.brinted.data.model
 
-enum class ResultadoPartida { VICTORIA, DERROTA }
+// Modelos de datos para la aplicación
+enum class ResultadoPartida { VICTORIA, DERROTA } // Enum para representar el resultado de una partida
 
+// Modelo de datos para el usuario
 data class Usuario(
     val id: String = "",
     val correo: String = "",
-    val nombreInvocador: String = ""
+    val nombreInvocador: String = "",
+    val region: String = "euw1"
 )
 
+// Modelo de datos para estadísticas avanzadas del jugador
 data class EstadisticasAvanzadas(
     val kdaPromedio: Double,
     val csPorMin: Double,
@@ -19,12 +23,14 @@ data class EstadisticasAvanzadas(
     val nivel: Int
 )
 
+// Modelo de datos para un compañero reciente
 data class CompaneroReciente(
     val nombre: String,
     val rol: String,
     val avatar: String
 )
 
+// Modelo de datos para el detalle de un campeón
 data class CampeonDetalle(
     val nombre: String,
     val partidas: Int,
@@ -33,6 +39,7 @@ data class CampeonDetalle(
     val imagen: String
 )
 
+// Modelo de datos para el resumen de una partida
 data class PartidaResumen(
     val id: String,
     val campeon: String,
@@ -43,6 +50,7 @@ data class PartidaResumen(
     val icono: String
 )
 
+// Modelo de datos para un jugador en una partida
 data class JugadorPartida(
     val nombre: String,
     val rol: String,
@@ -51,6 +59,7 @@ data class JugadorPartida(
     val dano: String
 )
 
+// Modelo de datos para el detalle de una partida
 data class PartidaDetalle(
     val id: String,
     val campeonPrincipal: String,
@@ -58,11 +67,12 @@ data class PartidaDetalle(
     val kda: String,
     val duracion: String,
     val icono: String,
-    val equipoAzul: List<JugadorPartida>,
-    val equipoRojo: List<JugadorPartida>,
+    val aliados: List<JugadorPartida>,
+    val enemigos: List<JugadorPartida>,
     val metricasGlobales: List<EstadisticaClave>
 )
 
+// Modelo de datos para una noticia de deportes electrónicos
 data class NoticiaEsport(
     val id: String,
     val titulo: String,
@@ -71,11 +81,13 @@ data class NoticiaEsport(
     val url: String
 )
 
+// Modelo de datos para el análisis resumen
 data class AnalisisResumen(
     val kdaPorPartida: List<Double>,
     val metricas: List<EstadisticaClave>
 )
 
+// Modelo de datos para una estadística clave
 data class EstadisticaClave(
     val titulo: String,
     val valor: String,
@@ -83,6 +95,7 @@ data class EstadisticaClave(
     val tendencia: String? = null
 )
 
+// Modelo de datos para el resumen del dashboard
 data class DashboardResumen(
     val invocador: Usuario,
     val estadisticas: EstadisticasAvanzadas,

@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.brinted.data.mock.MockData
 import com.example.brinted.data.model.NoticiaEsport
 import com.example.brinted.ui.components.NoticiaCard
 import com.example.brinted.ui.theme.Fondo
@@ -26,7 +25,6 @@ fun EsportsScreen(
     cargando: Boolean,
     onVerNoticia: (NoticiaEsport) -> Unit
 ) {
-    val lista = if (noticias.isNotEmpty()) noticias else MockData.noticiasDemo
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -40,8 +38,15 @@ fun EsportsScreen(
                 Text("Cargando noticias...", style = Tipografia.bodyMedium, color = com.example.brinted.ui.theme.GrisTexto)
             }
         }
-        items(lista) { noticia ->
-            NoticiaCard(noticia = noticia, onClick = onVerNoticia)
+        if (noticias.isEmpty() && !cargando) {
+            item {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text("No hay noticias disponibles.", style = Tipografia.bodyMedium, color = com.example.brinted.ui.theme.GrisTexto)
+            }
+        } else {
+            items(noticias) { noticia ->
+                NoticiaCard(noticia = noticia, onClick = onVerNoticia)
+            }
         }
         item { Spacer(modifier = Modifier.height(32.dp)) }
     }

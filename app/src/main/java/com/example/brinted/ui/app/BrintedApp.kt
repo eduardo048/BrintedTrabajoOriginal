@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -30,7 +29,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.brinted.core.AppContainer
-import com.example.brinted.data.mock.MockData
 import com.example.brinted.navigation.Ruta
 import com.example.brinted.navigation.itemsNavegacion
 import com.example.brinted.ui.auth.AuthViewModel
@@ -63,7 +61,7 @@ fun BrintedApp() {
     val snackbarHostState = remember { SnackbarHostState() }
 
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModel.factory(AppContainer.authRepository))
-    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.factory(AppContainer.riotProvider))
+    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.factory(AppContainer.riotRepository))
 
     val authState by authViewModel.estado.collectAsStateWithLifecycle()
     val datosState by homeViewModel.estado.collectAsStateWithLifecycle()
@@ -82,7 +80,7 @@ fun BrintedApp() {
 
     LaunchedEffect(authState.usuario) {
         authState.usuario?.let { usuario ->
-            homeViewModel.cargarTodo(usuario.nombreInvocador)
+            homeViewModel.cargarTodo(usuario.nombreInvocador, usuario.region)
             navController.navigate(Ruta.Dashboard.ruta) {
                 popUpTo(navController.graph.findStartDestination().id) {
                     inclusive = true
@@ -135,8 +133,8 @@ fun BrintedApp() {
                     cargando = authState.cargando,
                     error = authState.error,
                     onBack = { navController.popBackStack() },
-                    onRegistro = { correo, contrasena, invocador ->
-                        authViewModel.registrar(correo, contrasena, invocador)
+                    onRegistro = { correo, contrasena, invocador, region ->
+                        authViewModel.registrar(correo, contrasena, invocador, region)
                     },
                     onYaTengoCuenta = { navController.navigate(Ruta.Login.ruta) }
                 )
@@ -147,7 +145,7 @@ fun BrintedApp() {
                     onVerPartida = {},
                     onRefresh = {
                         authState.usuario?.let {
-                            homeViewModel.cargarTodo(it.nombreInvocador)
+                            homeViewModel.cargarTodo(it.nombreInvocador, it.region)
                         }
                     },
                     onLogout = {
@@ -164,7 +162,9 @@ fun BrintedApp() {
                     partidas = datosState.historial,
                     cargando = datosState.cargando,
                     onClickPartida = { partida ->
-                        homeViewModel.cargarDetalle(partida.id)
+                        val region = authState.usuario?.region ?: "euw1"
+                        val invocador = authState.usuario?.nombreInvocador ?: ""
+                        homeViewModel.cargarDetalle(partida.id, region, invocador)
                         navController.navigate("detallePartida/${partida.id}")
                     }
                 )
@@ -199,22 +199,22 @@ fun BrintedApp() {
                 val detalle = datosState.detallePartida
                 val detalleError = datosState.detalleError
                 val detalleCargando = datosState.detalleCargando
-                var usarFallback by remember { mutableStateOf(false) }
-
                 LaunchedEffect(partidaId) {
                     if (detalle == null && !detalleCargando) {
-                        homeViewModel.cargarDetalle(partidaId)
+                        val region = authState.usuario?.region ?: "euw1"
+                        val invocador = authState.usuario?.nombreInvocador ?: ""
+                        homeViewModel.cargarDetalle(partidaId, region, invocador)
                     }
                 }
 
                 when {
-                    detalleCargando && detalle == null && !usarFallback -> {
+                    detalleCargando && detalle == null -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) { CircularProgressIndicator(color = Morado) }
                     }
-                    detalleError != null && detalle == null && !usarFallback -> {
+                    detalleError != null && detalle == null -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
@@ -224,18 +224,25 @@ fun BrintedApp() {
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Text(detalleError, color = GrisTexto)
-                                Button(onClick = { homeViewModel.cargarDetalle(partidaId) }) {
+                                Button(onClick = {
+                                    val region = authState.usuario?.region ?: "euw1"
+                                    val invocador = authState.usuario?.nombreInvocador ?: ""
+                                    homeViewModel.cargarDetalle(partidaId, region, invocador)
+                                }) {
                                     Text("Reintentar")
-                                }
-                                Button(onClick = { usarFallback = true }) {
-                                    Text("Usar datos de prueba")
                                 }
                             }
                         }
                     }
                     else -> {
-                        val datoSeguro = detalle ?: MockData.detallePorId(partidaId)
-                        PartidaDetalleScreen(datoSeguro) { navController.popBackStack() }
+                        if (detalle != null) {
+                            PartidaDetalleScreen(detalle) { navController.popBackStack() }
+                        } else if (detalleError == null) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) { Text("No hay datos disponibles.", color = GrisTexto) }
+                        }
                     }
                 }
             }

@@ -24,6 +24,11 @@ val Tipografia = Typography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
     ),
+    titleLarge = TextStyle(
+        fontFamily = fuenteGeneral,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
+    ),
     bodyLarge = TextStyle(
         fontFamily = fuenteGeneral,
         fontWeight = FontWeight.Normal,
@@ -34,6 +39,11 @@ val Tipografia = Typography(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
     ),
+    bodySmall = TextStyle(
+        fontFamily = fuenteGeneral,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+    ),
     labelLarge = TextStyle(
         fontFamily = fuenteGeneral,
         fontWeight = FontWeight.Bold,
@@ -43,5 +53,10 @@ val Tipografia = Typography(
         fontFamily = fuenteGeneral,
         fontWeight = FontWeight.SemiBold,
         fontSize = 14.sp,
+    ),
+    labelSmall = TextStyle(
+        fontFamily = fuenteGeneral,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
     )
 )

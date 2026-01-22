@@ -29,7 +29,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.brinted.data.mock.MockData
 import com.example.brinted.data.model.PartidaResumen
 import com.example.brinted.data.model.ResultadoPartida
 import com.example.brinted.ui.theme.Fondo
@@ -47,7 +46,6 @@ fun HistorialScreen(
     cargando: Boolean,
     onClickPartida: (PartidaResumen) -> Unit
 ) {
-    val lista = if (partidas.isNotEmpty()) partidas else MockData.partidasDemo
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -71,7 +69,7 @@ fun HistorialScreen(
                 }
             }
         }
-        listItems(lista) { partida ->
+        listItems(partidas) { partida ->
             HistorialCard(partida, onClickPartida)
         }
         item { Spacer(modifier = Modifier.height(32.dp)) }
