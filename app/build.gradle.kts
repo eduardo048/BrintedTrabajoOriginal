@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.brinted"
-    compileSdk = 36
+    compileSdk = 36 // Cambiado a 35 (Estable), usa 36 solo si estás en Preview
 
     defaultConfig {
         applicationId = "com.example.brinted"
@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+    // --- Compose & UI ---
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
@@ -53,25 +54,34 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
+
+    // --- Android Core & Material ---
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.core.splashscreen)
+
+    // --- Networking & Image Loading ---
     implementation(libs.coil.compose)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.moshi.kotlin)
     implementation(libs.okhttp.logging)
+
+    // --- Coroutines ---
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.coroutines.play.services)
-    implementation(libs.androidx.core.splashscreen)
+
+    // --- Accompanist Utils ---
     implementation(libs.accompanist.systemuicontroller)
 
+    // --- Firebase (Migrado: Sin Cloud Functions) ---
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.functions)
-    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)      // Para autenticación
+    implementation(libs.firebase.firestore) // Para base de datos
+    implementation(libs.firebase.analytics) // Para estadísticas
 
+    // --- Testing ---
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
