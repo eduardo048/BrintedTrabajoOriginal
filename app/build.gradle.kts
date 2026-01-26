@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.coroutines.play.services)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.accompanist.systemuicontroller)
 
     implementation(platform(libs.firebase.bom))

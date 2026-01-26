@@ -20,6 +20,7 @@ googleServices = "4.4.2"
 coroutines = "1.9.0"
 accompanist = "0.36.0"
 coroutinesPlay = "1.9.0"
+splashscreen = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +52,7 @@ firebase-functions = { group = "com.google.firebase", name = "firebase-functions
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutinesPlay" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 
 [plugins]
