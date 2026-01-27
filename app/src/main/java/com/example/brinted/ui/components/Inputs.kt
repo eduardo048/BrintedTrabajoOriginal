@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.example.brinted.ui.theme.*
 
 // Botón primario con estilo personalizado
+//Sirve para acciones principales en la interfaz de usuario
 @Composable
 fun BotonPrimario(texto: String, modifier: Modifier = Modifier, habilitado: Boolean = true, onClick: () -> Unit) { // Botón primario con estilo personalizado
     Button( // Botón primario con estilo personalizado

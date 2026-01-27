@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 // Estado de la UI para la autenticación
+//Sirve para representar el estado actual de la interfaz de usuario en relación con la autenticación
 data class AuthUiState(
     val usuario: Usuario? = null,  // Usuario autenticado
     val cargando: Boolean = false, // Indica si una operación está en progreso

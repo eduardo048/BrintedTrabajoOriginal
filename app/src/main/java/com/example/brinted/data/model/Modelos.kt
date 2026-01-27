@@ -69,7 +69,7 @@ data class NoticiaEsport( // Modelo de datos para una noticia de esports
 data class Insight( // Modelo de datos para un insight generado
     val titulo: String,
     val descripcion: String,
-    val tipo: String // "POSITIVE", "NEGATIVE", "NEUTRAL"
+    val tipo: String
 )
 
 data class AnalisisResumen( // Modelo de datos para el resumen del análisis de un jugador
@@ -78,14 +78,14 @@ data class AnalisisResumen( // Modelo de datos para el resumen del análisis de 
     val insights: List<Insight> = emptyList()
 )
 
-data class EstadisticaClave(
-    val titulo: String, // Título de la estadística clave
+data class EstadisticaClave( // Modelo de datos para una estadística clave
+    val titulo: String,
     val valor: String,
     val icono: String? = null,
     val tendencia: String? = null
 )
 
-data class DashboardResumen(
+data class DashboardResumen( // Modelo de datos para el resumen del dashboard de un jugador
     val invocador: Usuario,
     val estadisticas: EstadisticasAvanzadas,
     val campeones: List<CampeonDetalle>,

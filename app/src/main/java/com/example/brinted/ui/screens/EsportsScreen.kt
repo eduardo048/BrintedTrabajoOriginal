@@ -1,7 +1,6 @@
 package com.example.brinted.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -16,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.example.brinted.data.model.NoticiaEsport
 import com.example.brinted.ui.components.NoticiaCard
 import com.example.brinted.ui.theme.Fondo
+import com.example.brinted.ui.theme.GrisTexto
 import com.example.brinted.ui.theme.Tipografia
 
 /** Pantalla de eSports: lista noticias y permite abrir la URL origen. */
@@ -32,22 +32,25 @@ fun EsportsScreen(
             .padding(16.dp)
     ) {
         item { Text("eSports", style = Tipografia.headlineMedium, color = Color.White) }
+        
         if (cargando) {
             item {
                 Spacer(modifier = Modifier.height(6.dp))
-                Text("Cargando noticias...", style = Tipografia.bodyMedium, color = com.example.brinted.ui.theme.GrisTexto)
+                Text("Cargando noticias...", style = Tipografia.bodyMedium, color = GrisTexto)
             }
         }
+        
         if (noticias.isEmpty() && !cargando) {
             item {
                 Spacer(modifier = Modifier.height(6.dp))
-                Text("No hay noticias disponibles.", style = Tipografia.bodyMedium, color = com.example.brinted.ui.theme.GrisTexto)
+                Text("No hay noticias disponibles.", style = Tipografia.bodyMedium, color = GrisTexto)
             }
         } else {
             items(noticias) { noticia ->
                 NoticiaCard(noticia = noticia, onClick = onVerNoticia)
             }
         }
+        
         item { Spacer(modifier = Modifier.height(32.dp)) }
     }
 }

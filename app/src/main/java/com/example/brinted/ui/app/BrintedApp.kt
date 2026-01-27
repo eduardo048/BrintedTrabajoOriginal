@@ -71,10 +71,7 @@ fun BrintedApp() {
     val mostrarBottomBar = itemsNavegacion.any { it.ruta.ruta == rutaActual } // Determina si se debe mostrar la barra de navegación inferior
     val context = LocalContext.current // Contexto de la aplicación
 
-    // Efectos secundarios para mostrar mensajes de Snackbar basados en el estado
-    LaunchedEffect(datosState.avisoMock) {
-        datosState.avisoMock?.let { mensaje -> snackbarHostState.showSnackbar(mensaje) } // Muestra un Snackbar con el mensaje de aviso
-    }
+
     // Efecto para mostrar errores de autenticación
     LaunchedEffect(datosState.error) {
         datosState.error?.let { snackbarHostState.showSnackbar(it) } // Muestra un Snackbar con el mensaje de error

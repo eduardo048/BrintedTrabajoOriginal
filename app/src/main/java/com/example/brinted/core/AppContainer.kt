@@ -4,17 +4,18 @@ import com.example.brinted.data.firebase.AuthRepository
 import com.example.brinted.data.riot.RiotRepository
 import com.example.brinted.data.riot.RiotRepositoryFactory
 
-// Clase de contenedor de dependencias
+//Clase que actúa como contenedor de dependencias para la aplicación
 object AppContainer {
 
-    // Se ha añadido /api/ al final para que coincida con las rutas de Vercel
-    private const val BASE_FUNCTIONS = "https://riot-api-proxy.vercel.app/api/" 
+    private const val BASE_FUNCTIONS = "https://riot-api-proxy.vercel.app/api/"  //URL base de las funciones en la nube
 
+    //Repositorio de autenticación
     val authRepository: AuthRepository by lazy {
-        AuthRepository()
+        AuthRepository() //Instancia del repositorio de autenticación
     }
 
+    //Repositorio de Riot Games
     val riotRepository: RiotRepository by lazy {
-        RiotRepositoryFactory.crear(BASE_FUNCTIONS)
+        RiotRepositoryFactory.crear(BASE_FUNCTIONS) //Instancia del repositorio de Riot Games
     }
 }

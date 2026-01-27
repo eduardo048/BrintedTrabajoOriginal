@@ -12,7 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class DatosUiState(
+// Estado UI que contiene todos los datos necesarios para la pantalla principal
+//Sirve como un contenedor para los diferentes datos que se mostrarán en la UI.
+data class DatosUiState( // Estado inicial con valores por defecto
     val dashboard: DashboardResumen? = null,
     val historial: List<PartidaResumen> = emptyList(),
     val analisis: AnalisisResumen? = null,
@@ -20,83 +22,86 @@ data class DatosUiState(
     val noticias: List<NoticiaEsport> = emptyList(),
     val cargando: Boolean = false,
     val error: String? = null,
-    val avisoMock: String? = null,
     val detallePartida: PartidaDetalle? = null,
     val detalleCargando: Boolean = false,
     val detalleError: String? = null
 )
 
+// ViewModel que maneja la lógica de negocio y el estado UI para la pantalla principal
 class HomeViewModel(private val riotRepository: RiotRepository) : ViewModel() {
 
-    private val _estado = MutableStateFlow(DatosUiState())
-    val estado: StateFlow<DatosUiState> = _estado.asStateFlow()
+    private val _estado = MutableStateFlow(DatosUiState()) // Exposición del estado como StateFlow inmutable
+    val estado: StateFlow<DatosUiState> = _estado.asStateFlow() // Exposición del estado como StateFlow inmutable
 
-    fun cargarTodo(invocador: String, region: String) {
-        Log.d("BRINTED_DEBUG", "Iniciando carga para: $invocador en $region")
-        viewModelScope.launch {
-            _estado.update { it.copy(cargando = true, error = null) }
+    fun cargarTodo(invocador: String, region: String) { // Función para cargar todos los datos necesarios
+        Log.d("BRINTED_DEBUG", "Iniciando carga para: $invocador en $region") // Log para depuración
+        viewModelScope.launch {// Lanzamiento de una coroutine en el scope del ViewModel
+            _estado.update { it.copy(cargando = true, error = null) } // Actualización del estado para indicar que se está cargando
             
             try {
-                val dashboard = riotRepository.cargarDashboard(invocador, region)
-                val historial = riotRepository.cargarHistorial(invocador, region)
-                val analisis = riotRepository.cargarAnalisis(invocador, region)
-                val campeones = riotRepository.cargarCampeones(invocador, region)
-                val noticias = riotRepository.cargarNoticias()
-                actualizarEstado(
-                    DatosCompletos(
-                        dashboard = dashboard,
-                        historial = historial,
-                        analisis = analisis,
-                        campeones = campeones,
-                        noticias = noticias
+                val dashboard = riotRepository.cargarDashboard(invocador, region) // Carga del resumen del dashboard
+                val historial = riotRepository.cargarHistorial(invocador, region) // Carga del historial de partidas
+                val analisis = riotRepository.cargarAnalisis(invocador, region) // Carga del análisis de rendimiento
+                val campeones = riotRepository.cargarCampeones(invocador, region) // Carga de detalles de campeones
+                val noticias = riotRepository.cargarNoticias() // Carga de noticias de esports
+                actualizarEstado( // Actualización del estado con los datos cargados
+                    DatosCompletos( // Creación de un objeto DatosCompletos con los datos obtenidos
+                        dashboard = dashboard, // Asignación del resumen del dashboard
+                        historial = historial, // Asignación del historial de partidas
+                        analisis = analisis, // Asignación del análisis de rendimiento
+                        campeones = campeones, // Asignación de detalles de campeones
+                        noticias = noticias // Asignación de noticias de esports
                     )
                 )
             } catch (e: Exception) {
-                Log.e("BRINTED_DEBUG", "ERROR CRÍTICO EN CARGAR_TODO", e)
-                _estado.update {
+                Log.e("BRINTED_DEBUG", "ERROR CRÍTICO EN CARGAR_TODO", e) // Log del error para depuración
+                _estado.update { // Actualización del estado en caso de error
                     it.copy(
-                        cargando = false,
-                        error = "Error: ${e.localizedMessage ?: "Fallo de conexión"}"
+                        cargando = false, // Indicación de que la carga ha finalizado
+                        error = "Error: ${e.localizedMessage ?: "Fallo de conexión"}" // Mensaje de error
                     )
                 }
             }
         }
     }
 
+    // Función privada para actualizar el estado UI con los datos cargados
     private fun actualizarEstado(resultado: DatosCompletos) {
-        _estado.update {
+        _estado.update { // Actualización del estado con los datos proporcionados
             it.copy(
-                dashboard = resultado.dashboard,
-                historial = resultado.historial,
-                analisis = resultado.analisis,
-                campeones = resultado.campeones,
-                noticias = resultado.noticias,
-                cargando = false,
-                avisoMock = null
+                dashboard = resultado.dashboard, // Asignación del resumen del dashboard
+                historial = resultado.historial, // Asignación del historial de partidas
+                analisis = resultado.analisis, // Asignación del análisis de rendimiento
+                campeones = resultado.campeones, // Asignación de detalles de campeones
+                noticias = resultado.noticias, // Asignación de noticias de esports
+                cargando = false, // Indicación de que la carga ha finalizado
             )
         }
     }
 
+    // Función para cargar el detalle de una partida específica
     fun cargarDetalle(partidaId: String, region: String, invocador: String) {
-        viewModelScope.launch {
-            _estado.update { it.copy(detalleCargando = true, detallePartida = null) }
-            runCatching { riotRepository.cargarDetallePartida(partidaId, region, invocador) }
-                .onSuccess { res -> _estado.update { it.copy(detallePartida = res, detalleCargando = false) } }
-                .onFailure { e -> _estado.update { it.copy(detalleError = e.message, detalleCargando = false) } }
+        viewModelScope.launch { // Lanzamiento de una coroutine en el scope del ViewModel
+            _estado.update { it.copy(detalleCargando = true, detallePartida = null) } // Actualización del estado para indicar que se está cargando el detalle
+            runCatching { riotRepository.cargarDetallePartida(partidaId, region, invocador) } // Intento de cargar el detalle de la partida
+                .onSuccess { res -> _estado.update { it.copy(detallePartida = res, detalleCargando = false) } } // Actualización del estado con el detalle cargado
+                .onFailure { e -> _estado.update { it.copy(detalleError = e.message, detalleCargando = false) } } // Actualización del estado en caso de error
         }
     }
 
+    // Factory para crear instancias de HomeViewModel con la dependencia RiotRepository
     companion object {
-        fun factory(provider: RiotRepository): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return HomeViewModel(provider) as T
+        fun factory(provider: RiotRepository): ViewModelProvider.Factory = // Función que devuelve un ViewModelProvider.Factory
+            object : ViewModelProvider.Factory { // Implementación anónima de ViewModelProvider.Factory
+                @Suppress("UNCHECKED_CAST") // Supresión de advertencias de conversión de tipos
+                override fun <T : ViewModel> create(modelClass: Class<T>): T { // Función para crear una instancia del ViewModel
+                    return HomeViewModel(provider) as T // Creación y retorno de una instancia de HomeViewModel
                 }
             }
     }
 }
 
+// Clase de datos que agrupa todos los datos necesarios para la pantalla principal
 data class DatosCompletos(
     val dashboard: DashboardResumen,
     val historial: List<PartidaResumen>,
