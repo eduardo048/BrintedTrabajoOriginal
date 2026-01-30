@@ -44,7 +44,7 @@ fun BrintedTheme(
     if (!vista.isInEditMode) {
         SideEffect {
             val window = (vista.context as Activity).window
-            // Cambiamos el color de las barras para que coincidan con el lila del botón (Morado)
+
             window.statusBarColor = Morado.toArgb()
             window.navigationBarColor = Morado.toArgb()
             
