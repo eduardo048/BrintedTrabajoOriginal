@@ -75,7 +75,7 @@ dependencies {
     // --- Accompanist Utils ---
     implementation(libs.accompanist.systemuicontroller)
 
-    // --- Firebase (Migrado: Sin Cloud Functions) ---
+    // --- Firebase ---
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)      // Para autenticación
     implementation(libs.firebase.firestore) // Para base de datos
