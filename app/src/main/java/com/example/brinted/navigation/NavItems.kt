@@ -9,6 +9,8 @@ import androidx.compose.material.icons.outlined.Psychology
 import androidx.compose.ui.graphics.vector.ImageVector
 
 // Definición de los elementos de navegación con sus rutas, iconos y etiquetas
+// Cada elemento representa una sección diferente de la aplicación
+// utilizando iconos predeterminados de Material Icons
 data class NavItem(val ruta: Ruta, val icono: ImageVector, val etiqueta: String) // Clase de datos para un elemento de navegación
 
 val itemsNavegacion = listOf(

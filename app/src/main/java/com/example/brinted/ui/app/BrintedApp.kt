@@ -52,10 +52,9 @@ import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.Alignment
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-// Función principal de la aplicación Brinted que configura la navegación y la interfaz de usuario
+// Función principal de la aplicación Brinted que configura la navegación y la interfaz de usuario principal
 fun BrintedApp() {
     val navController = rememberNavController() // Controlador de navegación
     val snackbarHostState = remember { SnackbarHostState() } // Estado del host de Snackbar

@@ -9,6 +9,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 // Definición de la interfaz del repositorio
+// Define los métodos para interactuar con los datos de Riot Games
+// Cada metodo retorna un tipo de dato específico relacionado con la funcionalidad requerida.¡
+
 interface RiotRepository {
     suspend fun cargarDashboard(invocador: String, region: String): DashboardResumen // Cambiado a DashboardResumen
     suspend fun cargarHistorial(invocador: String, region: String): List<PartidaResumen> // Cambiado a PartidaResumen
@@ -31,7 +34,7 @@ class RiotRepositoryRemoto(private val service: RiotFunctionsService) : RiotRepo
 
 // Fábrica para crear instancias del repositorio
 object RiotRepositoryFactory {
-    // Método para crear una instancia del repositorio con configuración de red
+    // Metodo para crear una instancia del repositorio con configuración de red
     fun crear(baseUrl: String?): RiotRepository {
         val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build() // Configuración de Moshi con soporte para Kotlin
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY } // Interceptor para logging de solicitudes HTTP

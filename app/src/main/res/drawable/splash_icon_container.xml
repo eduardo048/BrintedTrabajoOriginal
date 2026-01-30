@@ -4,12 +4,14 @@
     <!-- Fondo negro -->
     <item android:drawable="@android:color/black" />
 
-    <!-- Logo centrado -->
-    <item>
+    <!-- Logo ajustado y centrado (160dp para evitar que se corte) -->
+    <item
+        android:width="160dp"
+        android:height="160dp"
+        android:gravity="center">
         <bitmap
-            android:gravity="center"
-            android:src="@drawable/brinted_splash"/>
+            android:src="@drawable/splashn"
+            android:gravity="fill"/>
     </item>
 
 </layer-list>
-

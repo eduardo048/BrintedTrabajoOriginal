@@ -51,7 +51,7 @@ fun LoginScreen(
     // Estructura principal de la pantalla
     Column(
         modifier = Modifier
-            .fillMaxSize() // Ocupa todo el espacio disponible
+            .fillMaxSize() //Ocupa todo el espacio disponible
             .background(Fondo) // Fondo de la pantalla
             .padding(horizontal = 20.dp, vertical = 12.dp) // Espaciado interno
     ) {

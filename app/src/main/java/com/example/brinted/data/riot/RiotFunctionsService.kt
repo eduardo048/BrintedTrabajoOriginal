@@ -10,6 +10,14 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 // Definición de la interfaz para las funciones de Riot utilizando Retrofit
+// Cada función corresponde a un endpoint específico de la API
+// y utiliza anotaciones para definir el metodo HTTP y los parámetros de consulta
+// Las funciones son suspendidas para permitir su uso con corutinas de Kotlin
+// y manejar operaciones asíncronas de manera eficiente
+// La interfaz incluye funciones para obtener el resumen del dashboard,
+// el historial de partidas, el análisis del invocador, los detalles de los campeones,
+// las noticias de esports y los detalles de una partida específica
+
 interface RiotFunctionsService {
     // Función para obtener el resumen del dashboard de un invocador
     @GET("dashboard")

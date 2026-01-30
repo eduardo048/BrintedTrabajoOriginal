@@ -14,6 +14,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 // Repositorio para manejar la autenticación y gestión de usuarios con Firebase
+// Proporciona funciones para registrar, iniciar sesión, cerrar sesión y observar el estado de la sesión del usuario
+// Utiliza Firebase Authentication y Firestore para almacenar y recuperar datos de usuarios
+// Emite el estado de la sesión del usuario como un flujo de datos
 class AuthRepository(
     private val auth: FirebaseAuth = Firebase.auth, // Instancia de FirebaseAuth
     private val firestore: FirebaseFirestore = Firebase.firestore // Instancia de FirebaseFirestore

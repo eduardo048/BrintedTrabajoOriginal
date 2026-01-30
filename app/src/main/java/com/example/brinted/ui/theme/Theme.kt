@@ -44,10 +44,18 @@ fun BrintedTheme(
     if (!vista.isInEditMode) {
         SideEffect {
             val window = (vista.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
-            window.navigationBarColor = colorScheme.background.toArgb()
-            systemUiController.setStatusBarColor(color = colorScheme.background, darkIcons = !darkTheme)
-            systemUiController.setNavigationBarColor(color = colorScheme.background, darkIcons = !darkTheme)
+            // Cambiamos el color de las barras para que coincidan con el lila del botón (Morado)
+            window.statusBarColor = Morado.toArgb()
+            window.navigationBarColor = Morado.toArgb()
+            
+            systemUiController.setStatusBarColor(
+                color = Morado,
+                darkIcons = false // Iconos claros sobre el lila
+            )
+            systemUiController.setNavigationBarColor(
+                color = Morado,
+                darkIcons = false
+            )
         }
     }
 

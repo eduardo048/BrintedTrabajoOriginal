@@ -1,5 +1,11 @@
 package com.example.brinted.data.model
 
+// Modelos de datos para la aplicación
+// Representan las estructuras de datos utilizadas en la aplicación
+// Incluyen usuarios, estadísticas, campeones, partidas, noticias, insights y análisis
+// Cada modelo está diseñado para encapsular la información relevante de manera clara y concisa
+// para facilitar su uso en la lógica de la aplicación y la interfaz de usuario
+
 enum class ResultadoPartida { VICTORIA, DERROTA } // Enum para representar el resultado de una partida
 
 data class Usuario( // Modelo de datos para un usuario

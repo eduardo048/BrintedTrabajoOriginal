@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 
 // Estado de la UI para la autenticación
 //Sirve para representar el estado actual de la interfaz de usuario en relación con la autenticación
+// Contiene información sobre el usuario autenticado, si hay una operación en progreso y cualquier mensaje de error
+// Es inmutable para garantizar que el estado no se modifique directamente desde fuera del ViewModel
 data class AuthUiState(
     val usuario: Usuario? = null,  // Usuario autenticado
     val cargando: Boolean = false, // Indica si una operación está en progreso

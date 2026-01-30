@@ -1,7 +1,8 @@
 ﻿package com.example.brinted.navigation
 
 // Definición de las rutas de la aplicación
-//Sirve para navegar entre las diferentes pantallas de la app
+// Cada ruta tiene un identificador único y un título asociado
+// para facilitar la navegación y la gestión de pantallas.
 sealed class Ruta(val ruta: String, val titulo: String) {
     data object Bienvenida : Ruta("bienvenida", "Brinted")
     data object Login : Ruta("login", "Iniciar sesión")
