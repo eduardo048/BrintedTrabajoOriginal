@@ -32,89 +32,91 @@ import com.example.brinted.ui.theme.Tipografia
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
 
-/** Pantalla de campeones: muestra los campeones más jugados con WR y partidas. */
+// Pantalla que muestra la lista de campeones con sus detalles
+// incluyendo imagen, nombre, tasa de victorias y partidas jugadas.
+
 @Composable
-fun CampeonesScreen(
-    campeones: List<CampeonDetalle>,
-    cargando: Boolean
+fun CampeonesScreen( // Pantalla de Campeones
+    campeones: List<CampeonDetalle>, // Lista de campeones a mostrar
+    cargando: Boolean // Indicador de carga de datos
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Fondo)
-            .padding(16.dp)
+    Column( // Contenedor principal
+        modifier = Modifier  // Aplicación del modificador
+            .fillMaxSize() // Ocupa todo el espacio disponible
+            .background(Fondo) // Fondo de la pantalla
+            .padding(16.dp) // Espaciado interno
     ) {
-        Text("Campeones", style = Tipografia.headlineMedium, color = Color.White)
-        if (cargando) {
-            Spacer(modifier = Modifier.height(6.dp))
-            Text("Actualizando datos...", color = GrisTexto, style = Tipografia.bodyMedium)
+        Text("Campeones", style = Tipografia.headlineMedium, color = Color.White) // Título de la pantalla
+        if (cargando) { // Si está cargando datos
+            Spacer(modifier = Modifier.height(6.dp)) // Espaciado
+            Text("Actualizando datos...", color = GrisTexto, style = Tipografia.bodyMedium) // Mensaje de carga
         }
-        Spacer(modifier = Modifier.height(12.dp))
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize()
+        Spacer(modifier = Modifier.height(12.dp)) // Espaciado entre el título y la lista
+        LazyVerticalGrid( // Lista de campeones en formato de cuadrícula
+            columns = GridCells.Fixed(2), // Dos columnas
+            verticalArrangement = Arrangement.spacedBy(12.dp), // Espaciado vertical entre elementos
+            horizontalArrangement = Arrangement.spacedBy(12.dp), // Espaciado horizontal entre elementos
+            modifier = Modifier.fillMaxSize() // Ocupa todo el espacio disponible
         ) {
-            items(campeones) { campeon ->
-                Card(
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = FondoElevado)
+            items(campeones) { campeon -> // Itera sobre cada campeón
+                Card( // Tarjeta para cada campeón
+                    shape = RoundedCornerShape(18.dp), // Bordes redondeados
+                    colors = CardDefaults.cardColors(containerColor = FondoElevado) // Color de fondo de la tarjeta
                 ) {
-                    Column {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(150.dp)
+                    Column { // Contenedor vertical dentro de la tarjeta
+                        Box( // Contenedor para la imagen y el texto superpuesto
+                            modifier = Modifier // Aplicación del modificador
+                                .fillMaxWidth() // Ocupa todo el ancho disponible
+                                .height(150.dp) // Altura fija para la imagen
                         ) {
-                            AsyncImage(
-                                model = campeon.imagen,
-                                contentDescription = campeon.nombre,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
+                            AsyncImage( // Imagen del campeón
+                                model = campeon.imagen, // URL de la imagen
+                                contentDescription = campeon.nombre, // Descripción para accesibilidad
+                                contentScale = ContentScale.Crop, // Escala la imagen para cubrir el área
+                                modifier = Modifier.fillMaxSize() // Ocupa todo el espacio del contenedor
                             )
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .background(
-                                        Brush.verticalGradient(
-                                            listOf(Color.Transparent, Color(0xB3000000))
+                            Box( // Capa de degradado para mejorar la legibilidad del texto
+                                modifier = Modifier // Aplicación del modificador
+                                    .matchParentSize() // Ocupa todo el espacio del contenedor
+                                    .background( // Fondo con degradado
+                                        Brush.verticalGradient( // Degradado vertical
+                                            listOf(Color.Transparent, Color(0xB3000000)) // De transparente
                                         )
                                     )
                             )
-                            Row(
-                                modifier = Modifier
-                                    .padding(10.dp)
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.Top
+                            Row( // Fila para la tasa de victorias
+                                modifier = Modifier  // Aplicación del modificador
+                                    .padding(10.dp) // Espaciado interno
+                                    .fillMaxWidth(), // Ocupa todo el ancho disponible
+                                horizontalArrangement = Arrangement.Start, // Alineación al inicio
+                                verticalAlignment = Alignment.Top // Alineación en la parte superior
                             ) {
-                                ChipTexto("WR ${campeon.winRate}%", color = Color.White, fondo = Color(0x8022C55E))
+                                ChipTexto("WR ${campeon.winRate}%", color = Color.White, fondo = Color(0x8022C55E)) // Chip de tasa de victorias
                             }
-                            Column(
-                                modifier = Modifier
-                                    .align(Alignment.BottomStart)
-                                    .padding(12.dp)
+                            Column( // Columna para el nombre del campeón
+                                modifier = Modifier // Aplicación del modificador
+                                    .align(Alignment.BottomStart) // Alineado en la parte inferior izquierda
+                                    .padding(12.dp) // Espaciado interno
                             ) {
-                                Text(
-                                    campeon.nombre,
-                                    style = Tipografia.headlineSmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.White
+                                Text( // Nombre del campeón
+                                    campeon.nombre, // Texto del nombre
+                                    style = Tipografia.headlineSmall, // Estilo del texto
+                                    maxLines = 1, // Máximo una línea
+                                    overflow = TextOverflow.Ellipsis, // Elipsis si el texto es demasiado largo
+                                    color = Color.White // Color del texto
                                 )
                             }
                         }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 12.dp, vertical = 10.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                        Row( // Fila para las partidas jugadas
+                            modifier = Modifier  // Aplicación del modificador
+                                .fillMaxWidth() // Ocupa todo el ancho disponible
+                                .padding(horizontal = 12.dp, vertical = 10.dp), // Espaciado interno
+                            horizontalArrangement = Arrangement.SpaceBetween, // Espacio entre los elementos
+                            verticalAlignment = Alignment.CenterVertically // Alineación vertical centrada
                         ) {
-                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                Text("Partidas jugadas", style = Tipografia.bodyMedium, color = GrisTexto)
-                                Text("${campeon.partidas}", style = Tipografia.bodyLarge, color = Color.White)
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) { // Columna para el texto de partidas jugadas
+                                Text("Partidas jugadas", style = Tipografia.bodyMedium, color = GrisTexto) // Texto descriptivo
+                                Text("${campeon.partidas}", style = Tipografia.bodyLarge, color = Color.White) // Número de partidas jugadas
                             }
                         }
                     }
@@ -125,21 +127,21 @@ fun CampeonesScreen(
 }
 
 @Composable
-private fun ChipTexto(
-    texto: String,
-    color: Color = Color.White,
-    fondo: Color = color.copy(alpha = 0.16f),
-    modifier: Modifier = Modifier,
-    maxLines: Int = 1
+private fun ChipTexto( // Composable para un chip de texto estilizado
+    texto: String, // Texto a mostrar en el chip
+    color: Color = Color.White, // Color del texto
+    fondo: Color = color.copy(alpha = 0.16f), // Color de fondo del chip
+    modifier: Modifier = Modifier, // Modificador para personalización adicional
+    maxLines: Int = 1 // Máximo de líneas para el texto
 ) {
-    Text(
-        texto,
-        color = color,
-        style = Tipografia.labelMedium,
-        maxLines = maxLines,
-        overflow = TextOverflow.Ellipsis,
-        modifier = modifier
-            .background(fondo, shape = RoundedCornerShape(12.dp))
-            .padding(horizontal = 10.dp, vertical = 6.dp)
+    Text( // Texto del chip
+        texto, // Texto a mostrar
+        color = color, // Color del texto
+        style = Tipografia.labelMedium, // Estilo del texto
+        maxLines = maxLines, // Máximo de líneas
+        overflow = TextOverflow.Ellipsis, // Elipsis si el texto es demasiado largo
+        modifier = modifier // Aplicación del modificador
+            .background(fondo, shape = RoundedCornerShape(12.dp)) // Fondo con bordes redondeados
+            .padding(horizontal = 10.dp, vertical = 6.dp) // Espaciado interno
     )
 }
