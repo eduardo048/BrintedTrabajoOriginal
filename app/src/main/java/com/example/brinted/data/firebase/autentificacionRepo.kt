@@ -17,13 +17,13 @@ import kotlinx.coroutines.tasks.await
 // Proporciona funciones para registrar, iniciar sesión, cerrar sesión y observar el estado de la sesión del usuario
 // Utiliza Firebase Authentication y Firestore para almacenar y recuperar datos de usuarios
 // Emite el estado de la sesión del usuario como un flujo de datos
-class AuthRepository(
+class autentificacionRepo(
     private val auth: FirebaseAuth = Firebase.auth, // Instancia de FirebaseAuth
     private val firestore: FirebaseFirestore = Firebase.firestore // Instancia de FirebaseFirestore
 ) {
 
     val estadoSesion: Flow<Usuario?> = callbackFlow { // Flujo que emite el estado de la sesión del usuario
-        val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->// Escucha los cambios en el estado de autenticación
+        val escuchar = FirebaseAuth.AuthStateListener { firebaseAuth ->// Escucha los cambios en el estado de autenticación
             val usuario = firebaseAuth.currentUser // Obtiene el usuario actual
             if (usuario != null) { // Si hay un usuario autenticado
                 launch {
@@ -38,8 +38,8 @@ class AuthRepository(
                 trySend(null) // Envía null al flujo
             }
         }
-        auth.addAuthStateListener(listener) // Agrega el listener al FirebaseAuth
-        awaitClose { auth.removeAuthStateListener(listener) } // Elimina el listener cuando el flujo se cierra
+        auth.addAuthStateListener(escuchar) // Agrega el listener al FirebaseAuth
+        awaitClose { auth.removeAuthStateListener(escuchar) } // Elimina el listener cuando el flujo se cierra
     }
 
     // Función para registrar un nuevo usuario
@@ -89,10 +89,10 @@ class AuthRepository(
         correoFallback: String, // Correo electrónico de respaldo
         nombreFallback: String // Nombre de invocador de respaldo
     ): Usuario { // Devuelve un objeto Usuario
-        val snapshot = firestore.collection("usuarios").document(uid).get().await() // Obtiene el documento del usuario desde Firestore
-        val invocador = snapshot.getString("nombreInvocador").orEmpty().ifBlank { nombreFallback } // Obtiene el nombre de invocador o usa el de respaldo
-        val correo = snapshot.getString("correo").orEmpty().ifBlank { correoFallback } // Obtiene el correo electrónico o usa el de respaldo
-        val region = snapshot.getString("region").orEmpty().ifBlank { "euw1" } // Obtiene la región o usa "euw1" como valor predeterminado
+        val documentoSnapshot = firestore.collection("usuarios").document(uid).get().await() // Obtiene el documento del usuario desde Firestore
+        val invocador = documentoSnapshot.getString("nombreInvocador").orEmpty().ifBlank { nombreFallback } // Obtiene el nombre de invocador o usa el de respaldo
+        val correo = documentoSnapshot.getString("correo").orEmpty().ifBlank { correoFallback } // Obtiene el correo electrónico o usa el de respaldo
+        val region = documentoSnapshot.getString("region").orEmpty().ifBlank { "euw1" } // Obtiene la región o usa "euw1" como valor predeterminado
 
         // Devuelve el objeto Usuario con los datos obtenidos
         return Usuario(

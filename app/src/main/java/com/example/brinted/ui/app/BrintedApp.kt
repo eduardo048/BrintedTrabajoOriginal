@@ -56,16 +56,16 @@ import androidx.compose.ui.Alignment
 @Composable
 // Función principal de la aplicación Brinted que configura la navegación y la interfaz de usuario principal
 fun BrintedApp() {
-    val navController = rememberNavController() // Controlador de navegación
+    val navControlador = rememberNavController() // Controlador de navegación
     val snackbarHostState = remember { SnackbarHostState() } // Estado del host de Snackbar
 
-    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModel.factory(AppContainer.authRepository)) // ViewModel de autenticación
-    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.factory(AppContainer.riotRepository)) // ViewModel de la pantalla principal
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModel.factory(AppContainer.autentificacionRepo)) // ViewModel de autenticación
+    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.factory(AppContainer.riotRepositorio)) // ViewModel de la pantalla principal
 
     val authState by authViewModel.estado.collectAsStateWithLifecycle() // Estado de autenticación
     val datosState by homeViewModel.estado.collectAsStateWithLifecycle() // Estado de datos de la pantalla principal
 
-    val backStack by navController.currentBackStackEntryAsState() // Entrada actual en la pila de navegación
+    val backStack by navControlador.currentBackStackEntryAsState() // Entrada actual en la pila de navegación
     val rutaActual = backStack?.destination?.route // Ruta actual
     val mostrarBottomBar = itemsNavegacion.any { it.ruta.ruta == rutaActual } // Determina si se debe mostrar la barra de navegación inferior
     val context = LocalContext.current // Contexto de la aplicación
@@ -80,8 +80,8 @@ fun BrintedApp() {
     LaunchedEffect(authState.usuario) { // Se activa cuando cambia el usuario autenticado
         authState.usuario?.let { usuario -> // Si el usuario está autenticado
             homeViewModel.cargarTodo(usuario.nombreInvocador, usuario.region) // Carga todos los datos necesarios
-            navController.navigate(Ruta.Dashboard.ruta) { // Navega al dashboard
-                popUpTo(navController.graph.findStartDestination().id) {  // Limpia la pila de navegación
+            navControlador.navigate(Ruta.Dashboard.ruta) { // Navega al dashboard
+                popUpTo(navControlador.graph.findStartDestination().id) {  // Limpia la pila de navegación
                     inclusive = true // Elimina todas las entradas anteriores
                 }
                 launchSingleTop = true // Evita múltiples instancias
@@ -95,8 +95,8 @@ fun BrintedApp() {
         bottomBar = { // Barra de navegación inferior
             if (mostrarBottomBar) { // Mostrar solo si la ruta actual está en los elementos de navegación
                 BarraNavegacion(rutaActual) { destino -> // Función de navegación
-                    navController.navigate(destino.ruta) { // Navegar al destino seleccionado
-                        popUpTo(navController.graph.findStartDestination().id) {  //Evitar múltiples instancias
+                    navControlador.navigate(destino.ruta) { // Navegar al destino seleccionado
+                        popUpTo(navControlador.graph.findStartDestination().id) {  //Evitar múltiples instancias
                             saveState = true // Guardar el estado de la pantalla
                         }
                         launchSingleTop = true // Evitar múltiples instancias
@@ -107,14 +107,14 @@ fun BrintedApp() {
         }
     ) { padding ->
         NavHost( // Host de navegación
-            navController = navController, // Controlador de navegación
+            navController = navControlador, // Controlador de navegación
             startDestination = Ruta.Bienvenida.ruta, // Destino inicial
             modifier = Modifier.fillMaxSize() // Modificador para llenar el tamaño disponible
         ) {
             composable(Ruta.Bienvenida.ruta) { // Pantalla de bienvenida
                 BienvenidaScreen( // Composable de la pantalla de bienvenida
-                    onLogin = { navController.navigate(Ruta.Login.ruta) }, // Navegar a la pantalla de inicio de sesión
-                    onRegistro = { navController.navigate(Ruta.Registro.ruta) } // Navegar a la pantalla de registro
+                    onLogin = { navControlador.navigate(Ruta.Login.ruta) }, // Navegar a la pantalla de inicio de sesión
+                    onRegistro = { navControlador.navigate(Ruta.Registro.ruta) } // Navegar a la pantalla de registro
                 )
             }
             composable(Ruta.Login.ruta) { // Pantalla de inicio de sesión
@@ -122,11 +122,11 @@ fun BrintedApp() {
                     LoginScreen( // Composable de la pantalla de inicio de sesión
                         cargando = authState.cargando, // Estado de carga
                         error = authState.error, // Estado de error
-                        onBack = { navController.popBackStack() }, // Acción para volver atrás
+                        onBack = { navControlador.popBackStack() }, // Acción para volver atrás
                         onLogin = { correo, contrasena -> // Acción para iniciar sesión
                             authViewModel.iniciarSesion(correo, contrasena) // Llama al ViewModel para iniciar sesión
                         },
-                        onCrearCuenta = { navController.navigate(Ruta.Registro.ruta) } // Navegar a la pantalla de registro
+                        onCrearCuenta = { navControlador.navigate(Ruta.Registro.ruta) } // Navegar a la pantalla de registro
                     )
                 }
             }
@@ -137,11 +137,11 @@ fun BrintedApp() {
                     RegistroScreen( // Composable de la pantalla de registro
                         cargando = authState.cargando, // Estado de carga
                         error = authState.error, // Estado de error
-                        onBack = { navController.popBackStack() }, // Acción para volver atrás
+                        onBack = { navControlador.popBackStack() }, // Acción para volver atrás
                         onRegistro = { correo, contrasena, invocador, region -> // Acción para registrar una cuenta
                             authViewModel.registrar(correo, contrasena, invocador, region) // Llama al ViewModel para registrar una nueva cuenta
                         },
-                        onYaTengoCuenta = { navController.navigate(Ruta.Login.ruta) } // Navegar a la pantalla de inicio de sesión
+                        onYaTengoCuenta = { navControlador.navigate(Ruta.Login.ruta) } // Navegar a la pantalla de inicio de sesión
                     )
                 }
             }
@@ -159,8 +159,8 @@ fun BrintedApp() {
                         },
                         onLogout = { // Acción para cerrar sesión
                             authViewModel.cerrarSesion() // Llama al ViewModel para cerrar sesión
-                            navController.navigate(Ruta.Bienvenida.ruta) { // Navega a la pantalla de bienvenida
-                                popUpTo(navController.graph.findStartDestination().id) { inclusive = true } // Limpia la pila de navegación
+                            navControlador.navigate(Ruta.Bienvenida.ruta) { // Navega a la pantalla de bienvenida
+                                popUpTo(navControlador.graph.findStartDestination().id) { inclusive = true } // Limpia la pila de navegación
                                 launchSingleTop = true // Evita múltiples instancias
                             }
                         }
@@ -178,7 +178,7 @@ fun BrintedApp() {
                             val region = authState.usuario?.region ?: "euw1" // Obtiene la región del usuario o usa "euw1" por defecto
                             val invocador = authState.usuario?.nombreInvocador ?: "" // Obtiene el nombre del invocador del usuario o usa una cadena vacía por defecto
                             homeViewModel.cargarDetalle(partida.id, region, invocador) // Carga el detalle de la partida seleccionada
-                            navController.navigate("detallePartida/${partida.id}") // Navega a la pantalla de detalle de la partida
+                            navControlador.navigate("detallePartida/${partida.id}") // Navega a la pantalla de detalle de la partida
                         }
                     )
                 }
@@ -266,7 +266,7 @@ fun BrintedApp() {
                         }
                         else -> { // Estado exitoso, muestra el detalle de la partida
                             if (detalle != null) { // Si el detalle está disponible
-                                PartidaDetalleScreen(detalle) { navController.popBackStack() } // Muestra el detalle de la partida con una acción para volver atrás
+                                PartidaDetalleScreen(detalle) { navControlador.popBackStack() } // Muestra el detalle de la partida con una acción para volver atrás
                             } else if (detalleError == null) { // Si no hay detalle ni error
                                 Box( // Contenedor centrado
                                     modifier = Modifier.fillMaxSize(), // Llena el tamaño disponible

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.brinted.data.model.*
-import com.example.brinted.data.riot.RiotRepository
+import com.example.brinted.data.riot.RiotRepositorio
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,7 +28,7 @@ data class DatosUiState( // Estado inicial con valores por defecto
 )
 
 // ViewModel que maneja la lógica de negocio y el estado UI para la pantalla principal
-class HomeViewModel(private val riotRepository: RiotRepository) : ViewModel() {
+class HomeViewModel(private val riotRepositorio: RiotRepositorio) : ViewModel() {
 
     private val _estado = MutableStateFlow(DatosUiState()) // Exposición del estado como StateFlow inmutable
     val estado: StateFlow<DatosUiState> = _estado.asStateFlow() // Exposición del estado como StateFlow inmutable
@@ -39,11 +39,11 @@ class HomeViewModel(private val riotRepository: RiotRepository) : ViewModel() {
             _estado.update { it.copy(cargando = true, error = null) } // Actualización del estado para indicar que se está cargando
             
             try {
-                val dashboard = riotRepository.cargarDashboard(invocador, region) // Carga del resumen del dashboard
-                val historial = riotRepository.cargarHistorial(invocador, region) // Carga del historial de partidas
-                val analisis = riotRepository.cargarAnalisis(invocador, region) // Carga del análisis de rendimiento
-                val campeones = riotRepository.cargarCampeones(invocador, region) // Carga de detalles de campeones
-                val noticias = riotRepository.cargarNoticias() // Carga de noticias de esports
+                val dashboard = riotRepositorio.cargarDashboard(invocador, region) // Carga del resumen del dashboard
+                val historial = riotRepositorio.cargarHistorial(invocador, region) // Carga del historial de partidas
+                val analisis = riotRepositorio.cargarAnalisis(invocador, region) // Carga del análisis de rendimiento
+                val campeones = riotRepositorio.cargarCampeones(invocador, region) // Carga de detalles de campeones
+                val noticias = riotRepositorio.cargarNoticias() // Carga de noticias de esports
                 actualizarEstado( // Actualización del estado con los datos cargados
                     DatosCompletos( // Creación de un objeto DatosCompletos con los datos obtenidos
                         dashboard = dashboard, // Asignación del resumen del dashboard
@@ -83,7 +83,7 @@ class HomeViewModel(private val riotRepository: RiotRepository) : ViewModel() {
     fun cargarDetalle(partidaId: String, region: String, invocador: String) {
         viewModelScope.launch { // Lanzamiento de una coroutine en el scope del ViewModel
             _estado.update { it.copy(detalleCargando = true, detallePartida = null) } // Actualización del estado para indicar que se está cargando el detalle
-            runCatching { riotRepository.cargarDetallePartida(partidaId, region, invocador) } // Intento de cargar el detalle de la partida
+            runCatching { riotRepositorio.cargarDetallePartida(partidaId, region, invocador) } // Intento de cargar el detalle de la partida
                 .onSuccess { res -> _estado.update { it.copy(detallePartida = res, detalleCargando = false) } } // Actualización del estado con el detalle cargado
                 .onFailure { e -> _estado.update { it.copy(detalleError = e.message, detalleCargando = false) } } // Actualización del estado en caso de error
         }
@@ -91,7 +91,7 @@ class HomeViewModel(private val riotRepository: RiotRepository) : ViewModel() {
 
     // Factory para crear instancias de HomeViewModel con la dependencia RiotRepository
     companion object {
-        fun factory(provider: RiotRepository): ViewModelProvider.Factory = // Función que devuelve un ViewModelProvider.Factory
+        fun factory(provider: RiotRepositorio): ViewModelProvider.Factory = // Función que devuelve un ViewModelProvider.Factory
             object : ViewModelProvider.Factory { // Implementación anónima de ViewModelProvider.Factory
                 @Suppress("UNCHECKED_CAST") // Supresión de advertencias de conversión de tipos
                 override fun <T : ViewModel> create(modelClass: Class<T>): T { // Función para crear una instancia del ViewModel

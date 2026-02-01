@@ -11,12 +11,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 // Definición de los elementos de navegación con sus rutas, iconos y etiquetas
 // Cada elemento representa una sección diferente de la aplicación
 // utilizando iconos predeterminados de Material Icons
-data class NavItem(val ruta: Ruta, val icono: ImageVector, val etiqueta: String) // Clase de datos para un elemento de navegación
+data class NavegacionItem(val ruta: Ruta, val icono: ImageVector, val etiqueta: String) // Clase de datos para un elemento de navegación
 
 val itemsNavegacion = listOf(
-    NavItem(Ruta.Historial, Icons.Outlined.History, "Historial"), // Elemento de navegación para el historial
-    NavItem(Ruta.Analisis, Icons.Outlined.Analytics, "Análisis"), // Elemento de navegación para el análisis
-    NavItem(Ruta.Dashboard, Icons.Outlined.Category, "Inicio"), // Elemento de navegación para el dashboard
-    NavItem(Ruta.Campeones, Icons.Outlined.Psychology, "Campeones"), // Elemento de navegación para los campeones
-    NavItem(Ruta.Esports, Icons.Outlined.Newspaper, "eSports") // Elemento de navegación para eSports
+    NavegacionItem(Ruta.Historial, Icons.Outlined.History, "Historial"), // Elemento de navegación para el historial
+    NavegacionItem(Ruta.Analisis, Icons.Outlined.Analytics, "Análisis"), // Elemento de navegación para el análisis
+    NavegacionItem(Ruta.Dashboard, Icons.Outlined.Category, "Inicio"), // Elemento de navegación para el dashboard
+    NavegacionItem(Ruta.Campeones, Icons.Outlined.Psychology, "Campeones"), // Elemento de navegación para los campeones
+    NavegacionItem(Ruta.Esports, Icons.Outlined.Newspaper, "eSports") // Elemento de navegación para eSports
 )

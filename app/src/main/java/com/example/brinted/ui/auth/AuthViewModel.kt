@@ -3,7 +3,7 @@ package com.example.brinted.ui.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.brinted.data.firebase.AuthRepository
+import com.example.brinted.data.firebase.autentificacionRepo
 import com.example.brinted.data.model.Usuario
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +22,7 @@ data class AuthUiState(
 )
 
 // ViewModel para manejar la lógica de autenticación
-class AuthViewModel(private val repository: AuthRepository) : ViewModel() { // Inyección del repositorio de autenticación
+class AuthViewModel(private val repository: autentificacionRepo) : ViewModel() { // Inyección del repositorio de autenticación
 
     private val _estado = MutableStateFlow(AuthUiState()) // Estado mutable interno
     val estado: StateFlow<AuthUiState> = _estado.asStateFlow() // Exposición del estado como inmutable
@@ -72,7 +72,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() { // I
 
     // Factory para crear instancias de AuthViewModel con el repositorio inyectado
     companion object {
-        fun factory(repository: AuthRepository): ViewModelProvider.Factory =
+        fun factory(repository: autentificacionRepo): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory { // Implementación de ViewModelProvider.Factory
                 override fun <T : ViewModel> create(modelClass: Class<T>): T { // Creación del ViewModel
                     @Suppress("UNCHECKED_CAST")  // Supresión de la advertencia de conversión no verificada
