@@ -1,7 +1,6 @@
 package com.example.brinted.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -52,8 +51,8 @@ fun CampoFormulario( // Campo de formulario con soporte para contraseñas y pers
     valor: String, // Valor actual del campo de texto
     onValueChange: (String) -> Unit, // Acción al cambiar el valor del campo
     label: String, // Etiqueta del campo de texto
-    placeholder: String, // Texto de ejemplo del campo de texto
-    leading: @Composable (() -> Unit)? = null, // Icono al inicio del campo de texto
+    sugerencia: String, // Texto de ejemplo del campo de texto
+    iconoInicio: @Composable (() -> Unit)? = null, // Icono al inicio del campo de texto
     esPassword: Boolean = false, // Indica si el campo es una contraseña
     modifier: Modifier = Modifier // Modificador para personalizar el campo de texto
 ) {
@@ -65,8 +64,8 @@ fun CampoFormulario( // Campo de formulario con soporte para contraseñas y pers
         singleLine = true, // Campo de una sola línea
         shape = RoundedCornerShape(12.dp), // Esquinas redondeadas
         label = { Text(label) }, // Etiqueta del campo de texto
-        placeholder = { Text(placeholder, color = GrisTexto) }, // Texto de ejemplo del campo de texto
-        leadingIcon = leading, // Icono al inicio del campo de texto
+        placeholder = { Text(sugerencia, color = GrisTexto) }, // Texto de ejemplo del campo de texto
+        leadingIcon = iconoInicio, // Icono al inicio del campo de texto
         trailingIcon = if (esPassword) {    // Icono al final del campo de texto para mostrar/ocultar contraseña
             {
                 IconButton(onClick = { mostrar.value = !mostrar.value }) { // Acción al hacer clic en el icono

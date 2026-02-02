@@ -41,7 +41,7 @@ import com.example.brinted.ui.theme.Tipografia
 fun LoginScreen(
     cargando: Boolean, // Indica si se está procesando el inicio de sesión
     error: String?, // Mensaje de error a mostrar, si lo hay
-    onBack: () -> Unit, // Acción al presionar el botón de retroceso
+    alVolver: () -> Unit, // Acción al presionar el botón de retroceso
     onLogin: (String, String) -> Unit, // Acción al intentar iniciar sesión con correo y contraseña
     onCrearCuenta: () -> Unit // Acción al presionar el enlace para crear una cuenta
 ) {
@@ -55,7 +55,7 @@ fun LoginScreen(
             .background(Fondo) // Fondo de la pantalla
             .padding(horizontal = 20.dp, vertical = 12.dp) // Espaciado interno
     ) {
-        IconButton(onClick = onBack) { // Botón de retroceso
+        IconButton(onClick = alVolver) { // Botón de retroceso
             Icon(Icons.Outlined.ArrowBack, contentDescription = "Atrás", tint = Color.White) // Icono de flecha hacia atrás
         }
         Spacer(modifier = Modifier.height(10.dp)) // Espacio vertical
@@ -76,8 +76,8 @@ fun LoginScreen(
                     valor = correo.value, // Valor actual del campo
                     onValueChange = { correo.value = it }, // Actualiza el valor al cambiar
                     label = "Correo electrónico", // Etiqueta del campo
-                    placeholder = "tu.correo@ejemplo.com", // Texto de marcador de posición
-                    leading = { Icon(Icons.Outlined.Email, null, tint = GrisTexto) } // Icono al inicio del campo
+                    sugerencia = "tu.correo@ejemplo.com", // Texto de marcador de posición
+                    iconoInicio = { Icon(Icons.Outlined.Email, null, tint = GrisTexto) } // Icono al inicio del campo
                 )
                 Spacer(modifier = Modifier.height(14.dp)) // Espacio vertical
                 Text("Contraseña", style = Tipografia.bodyMedium, color = GrisTexto) // Etiqueta del campo de contraseña
@@ -86,8 +86,8 @@ fun LoginScreen(
                     valor = contrasena.value, // Valor actual del campo
                     onValueChange = { contrasena.value = it }, // Actualiza el valor al cambiar
                     label = "Contraseña", // Etiqueta del campo
-                    placeholder = "••••••••", // Texto de marcador de posición
-                    leading = { Icon(Icons.Outlined.Lock, null, tint = GrisTexto) }, // Icono al inicio del campo
+                    sugerencia = "••••••••", // Texto de marcador de posición
+                    iconoInicio = { Icon(Icons.Outlined.Lock, null, tint = GrisTexto) }, // Icono al inicio del campo
                     esPassword = true // Indica que es un campo de contraseña
                 )
                 Spacer(modifier = Modifier.height(18.dp)) // Espacio vertical

@@ -22,29 +22,29 @@ interface RiotRepositorio {
 }
 
 // Implementación del repositorio que utiliza Retrofit para llamadas de red
-class RiotRepositorioRemoto(private val service: RiotFunctionsService) : RiotRepositorio {
-    override suspend fun cargarDashboard(invocador: String, region: String) = service.dashboard(region, invocador) // Retorna DashboardResumen
-    override suspend fun cargarHistorial(invocador: String, region: String) = service.historial(region, invocador) // Retorna List<PartidaResumen>
-    override suspend fun cargarAnalisis(invocador: String, region: String) = service.analisis(region, invocador) // Retorna AnalisisResumen
-    override suspend fun cargarCampeones(invocador: String, region: String) = service.campeones(region, invocador) // Retorna List<CampeonDetalle>
-    override suspend fun cargarNoticias() = service.noticias() // Retorna List<NoticiaEsport>
+class RiotRepositorioRemoto(private val servicio: RiotFunctionsService) : RiotRepositorio {
+    override suspend fun cargarDashboard(invocador: String, region: String) = servicio.dashboard(region, invocador) // Retorna DashboardResumen
+    override suspend fun cargarHistorial(invocador: String, region: String) = servicio.historial(region, invocador) // Retorna List<PartidaResumen>
+    override suspend fun cargarAnalisis(invocador: String, region: String) = servicio.analisis(region, invocador) // Retorna AnalisisResumen
+    override suspend fun cargarCampeones(invocador: String, region: String) = servicio.campeones(region, invocador) // Retorna List<CampeonDetalle>
+    override suspend fun cargarNoticias() = servicio.noticias() // Retorna List<NoticiaEsport>
     override suspend fun cargarDetallePartida(partidaId: String, region: String, invocador: String) =  // Retorna PartidaDetalle
-        service.detalle(region, partidaId, invocador) // Retorna PartidaDetalle
+        servicio.detalle(region, partidaId, invocador) // Retorna PartidaDetalle
 }
 
 // Fábrica para crear instancias del repositorio
-object RiotRepositorioFactorizar {
+object FabricaRiotRepositorio {
     // Metodo para crear una instancia del repositorio con configuración de red
-    fun crear(baseUrl: String?): RiotRepositorio {
+    fun crear(urlBase: String?): RiotRepositorio {
         val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build() // Configuración de Moshi con soporte para Kotlin
-        val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY } // Interceptor para logging de solicitudes HTTP
-        val client = OkHttpClient.Builder().addInterceptor(logging).build() // Cliente HTTP con interceptor de logging
-        val finalBase = if (baseUrl?.endsWith("/") == true) baseUrl else "$baseUrl/" // Asegura que la URL base termine con "/"
+        val interceptorLogs = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY } // Interceptor para logging de solicitudes HTTP
+        val clienteHttp = OkHttpClient.Builder().addInterceptor(interceptorLogs).build() // Cliente HTTP con interceptor de logging
+        val finalBase = if (urlBase?.endsWith("/") == true) urlBase else "$urlBase/" // Asegura que la URL base termine con "/"
 
         // Construcción de Retrofit con la URL base, cliente HTTP y convertidor Moshi
         val retrofit = Retrofit.Builder()
             .baseUrl(finalBase) // Establece la URL base
-            .client(client) // Establece el cliente HTTPs
+            .client(clienteHttp) // Establece el cliente HTTPs
             .addConverterFactory(MoshiConverterFactory.create(moshi)) // Agrega el convertidor Moshi
             .build() // Construye la instancia de Retrofit
             

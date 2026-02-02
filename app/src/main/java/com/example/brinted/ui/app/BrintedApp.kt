@@ -30,10 +30,10 @@ import androidx.navigation.navArgument
 import com.example.brinted.core.AppContainer
 import com.example.brinted.navigation.Ruta
 import com.example.brinted.navigation.itemsNavegacion
-import com.example.brinted.ui.auth.AuthViewModel
+import com.example.brinted.ui.auth.ModeloVistaAuth
 import com.example.brinted.ui.auth.LoginScreen
 import com.example.brinted.ui.auth.RegistroScreen
-import com.example.brinted.ui.home.HomeViewModel
+import com.example.brinted.ui.home.modeloVistaHome
 import com.example.brinted.ui.screens.AnalisisScreen
 import com.example.brinted.ui.screens.BienvenidaScreen
 import com.example.brinted.ui.screens.CampeonesScreen
@@ -57,29 +57,29 @@ import androidx.compose.ui.Alignment
 // Función principal de la aplicación Brinted que configura la navegación y la interfaz de usuario principal
 fun BrintedApp() {
     val navControlador = rememberNavController() // Controlador de navegación
-    val snackbarHostState = remember { SnackbarHostState() } // Estado del host de Snackbar
+    val estadoContenedorSnackbar = remember { SnackbarHostState() } // Estado del host de Snackbar
 
-    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModel.factory(AppContainer.autentificacionRepo)) // ViewModel de autenticación
-    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.factory(AppContainer.riotRepositorio)) // ViewModel de la pantalla principal
+    val modeloVistaAuth: ModeloVistaAuth = viewModel(factory = ModeloVistaAuth.factory(AppContainer.autentificacionRepo)) // ViewModel de autenticación
+    val modeloVistaHome: modeloVistaHome = viewModel(factory = modeloVistaHome.factory(AppContainer.riotRepositorio)) // ViewModel de la pantalla principal
 
-    val authState by authViewModel.estado.collectAsStateWithLifecycle() // Estado de autenticación
-    val datosState by homeViewModel.estado.collectAsStateWithLifecycle() // Estado de datos de la pantalla principal
+    val estadoLogin by modeloVistaAuth.estado.collectAsStateWithLifecycle() // Estado de autenticación
+    val estadoDatosPrincipal by modeloVistaHome.estado.collectAsStateWithLifecycle() // Estado de datos de la pantalla principal
 
-    val backStack by navControlador.currentBackStackEntryAsState() // Entrada actual en la pila de navegación
-    val rutaActual = backStack?.destination?.route // Ruta actual
-    val mostrarBottomBar = itemsNavegacion.any { it.ruta.ruta == rutaActual } // Determina si se debe mostrar la barra de navegación inferior
-    val context = LocalContext.current // Contexto de la aplicación
+    val pilaNavegacion by navControlador.currentBackStackEntryAsState() // Entrada actual en la pila de navegación
+    val rutaActual = pilaNavegacion?.destination?.route // Ruta actual
+    val verBarraInferior = itemsNavegacion.any { it.ruta.ruta == rutaActual } // Determina si se debe mostrar la barra de navegación inferior
+    val contextoActual = LocalContext.current // Contexto de la aplicación
 
 
     // Efecto para mostrar errores de autenticación
-    LaunchedEffect(datosState.error) {
-        datosState.error?.let { snackbarHostState.showSnackbar(it) } // Muestra un Snackbar con el mensaje de error
+    LaunchedEffect(estadoDatosPrincipal.error) {
+        estadoDatosPrincipal.error?.let { estadoContenedorSnackbar.showSnackbar(it) } // Muestra un Snackbar con el mensaje de error
     }
 
     // Efecto para cargar datos y navegar al dashboard después de la autenticación
-    LaunchedEffect(authState.usuario) { // Se activa cuando cambia el usuario autenticado
-        authState.usuario?.let { usuario -> // Si el usuario está autenticado
-            homeViewModel.cargarTodo(usuario.nombreInvocador, usuario.region) // Carga todos los datos necesarios
+    LaunchedEffect(estadoLogin.usuario) { // Se activa cuando cambia el usuario autenticado
+        estadoLogin.usuario?.let { usuario -> // Si el usuario está autenticado
+            modeloVistaHome.cargarTodo(usuario.nombreInvocador, usuario.region) // Carga todos los datos necesarios
             navControlador.navigate(Ruta.Dashboard.ruta) { // Navega al dashboard
                 popUpTo(navControlador.graph.findStartDestination().id) {  // Limpia la pila de navegación
                     inclusive = true // Elimina todas las entradas anteriores
@@ -91,9 +91,9 @@ fun BrintedApp() {
 
     // Configuración de la estructura principal de la interfaz de usuario con Scaffold
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }, // Host de Snackbar
+        snackbarHost = { SnackbarHost(estadoContenedorSnackbar) }, // Host de Snackbar
         bottomBar = { // Barra de navegación inferior
-            if (mostrarBottomBar) { // Mostrar solo si la ruta actual está en los elementos de navegación
+            if (verBarraInferior) { // Mostrar solo si la ruta actual está en los elementos de navegación
                 BarraNavegacion(rutaActual) { destino -> // Función de navegación
                     navControlador.navigate(destino.ruta) { // Navegar al destino seleccionado
                         popUpTo(navControlador.graph.findStartDestination().id) {  //Evitar múltiples instancias
@@ -120,11 +120,11 @@ fun BrintedApp() {
             composable(Ruta.Login.ruta) { // Pantalla de inicio de sesión
                 Box(modifier = Modifier.padding(padding)) { // Contenedor con padding
                     LoginScreen( // Composable de la pantalla de inicio de sesión
-                        cargando = authState.cargando, // Estado de carga
-                        error = authState.error, // Estado de error
-                        onBack = { navControlador.popBackStack() }, // Acción para volver atrás
+                        cargando = estadoLogin.cargando, // Estado de carga
+                        error = estadoLogin.error, // Estado de error
+                        alVolver = { navControlador.popBackStack() }, // Acción para volver atrás
                         onLogin = { correo, contrasena -> // Acción para iniciar sesión
-                            authViewModel.iniciarSesion(correo, contrasena) // Llama al ViewModel para iniciar sesión
+                            modeloVistaAuth.iniciarSesion(correo, contrasena) // Llama al ViewModel para iniciar sesión
                         },
                         onCrearCuenta = { navControlador.navigate(Ruta.Registro.ruta) } // Navegar a la pantalla de registro
                     )
@@ -135,11 +135,11 @@ fun BrintedApp() {
             composable(Ruta.Registro.ruta) { // Composable de la pantalla de registro
                 Box(modifier = Modifier.padding(padding)) { // Contenedor con padding
                     RegistroScreen( // Composable de la pantalla de registro
-                        cargando = authState.cargando, // Estado de carga
-                        error = authState.error, // Estado de error
+                        cargando = estadoLogin.cargando, // Estado de carga
+                        error = estadoLogin.error, // Estado de error
                         onBack = { navControlador.popBackStack() }, // Acción para volver atrás
                         onRegistro = { correo, contrasena, invocador, region -> // Acción para registrar una cuenta
-                            authViewModel.registrar(correo, contrasena, invocador, region) // Llama al ViewModel para registrar una nueva cuenta
+                            modeloVistaAuth.registrar(correo, contrasena, invocador, region) // Llama al ViewModel para registrar una nueva cuenta
                         },
                         onYaTengoCuenta = { navControlador.navigate(Ruta.Login.ruta) } // Navegar a la pantalla de inicio de sesión
                     )
@@ -150,15 +150,15 @@ fun BrintedApp() {
             composable(Ruta.Dashboard.ruta) { // Composable de la pantalla del dashboard
                 Box(modifier = Modifier.padding(padding)) { // Contenedor con padding
                     DashboardScreen( // Composable de la pantalla del dashboard
-                        estado = datosState, // Estado de datos
+                        estado = estadoDatosPrincipal, // Estado de datos
                         onVerPartida = {}, // Acción para ver una partida (vacía por ahora)
                         onRefresh = { // Acción para refrescar los datos
-                            authState.usuario?.let { // Si el usuario está autenticado
-                                homeViewModel.cargarTodo(it.nombreInvocador, it.region) // Carga todos los datos necesarios
+                            estadoLogin.usuario?.let { // Si el usuario está autenticado
+                                modeloVistaHome.cargarTodo(it.nombreInvocador, it.region) // Carga todos los datos necesarios
                             }
                         },
                         onLogout = { // Acción para cerrar sesión
-                            authViewModel.cerrarSesion() // Llama al ViewModel para cerrar sesión
+                            modeloVistaAuth.cerrarSesion() // Llama al ViewModel para cerrar sesión
                             navControlador.navigate(Ruta.Bienvenida.ruta) { // Navega a la pantalla de bienvenida
                                 popUpTo(navControlador.graph.findStartDestination().id) { inclusive = true } // Limpia la pila de navegación
                                 launchSingleTop = true // Evita múltiples instancias
@@ -172,12 +172,12 @@ fun BrintedApp() {
             composable(Ruta.Historial.ruta) { // Composable de la pantalla del historial de partidas
                 Box(modifier = Modifier.padding(padding)) { // Contenedor con padding
                     HistorialScreen( // Composable de la pantalla del historial de partidas
-                        partidas = datosState.historial, // Lista de partidas del historial
-                        cargando = datosState.cargando, // Estado de carga
+                        partidas = estadoDatosPrincipal.historial, // Lista de partidas del historial
+                        cargando = estadoDatosPrincipal.cargando, // Estado de carga
                         onClickPartida = { partida -> // Acción al hacer clic en una partida
-                            val region = authState.usuario?.region ?: "euw1" // Obtiene la región del usuario o usa "euw1" por defecto
-                            val invocador = authState.usuario?.nombreInvocador ?: "" // Obtiene el nombre del invocador del usuario o usa una cadena vacía por defecto
-                            homeViewModel.cargarDetalle(partida.id, region, invocador) // Carga el detalle de la partida seleccionada
+                            val region = estadoLogin.usuario?.region ?: "euw1" // Obtiene la región del usuario o usa "euw1" por defecto
+                            val invocador = estadoLogin.usuario?.nombreInvocador ?: "" // Obtiene el nombre del invocador del usuario o usa una cadena vacía por defecto
+                            modeloVistaHome.cargarDetalle(partida.id, region, invocador) // Carga el detalle de la partida seleccionada
                             navControlador.navigate("detallePartida/${partida.id}") // Navega a la pantalla de detalle de la partida
                         }
                     )
@@ -188,8 +188,8 @@ fun BrintedApp() {
             composable(Ruta.Analisis.ruta) { // Composable de la pantalla de análisis
                 Box(modifier = Modifier.padding(padding)) { // Contenedor con padding
                     AnalisisScreen( // Composable de la pantalla de análisis
-                        analisis = datosState.analisis, // Datos de análisis
-                        cargando = datosState.cargando // Estado de carga
+                        analisis = estadoDatosPrincipal.analisis, // Datos de análisis
+                        cargando = estadoDatosPrincipal.cargando // Estado de carga
                     )
                 }
             }
@@ -198,8 +198,8 @@ fun BrintedApp() {
             composable(Ruta.Campeones.ruta) { // Composable de la pantalla de campeones
                 Box(modifier = Modifier.padding(padding)) { // Contenedor con padding
                     CampeonesScreen( // Composable de la pantalla de campeones
-                        campeones = datosState.campeones, // Lista de campeones
-                        cargando = datosState.cargando // Estado de carga
+                        campeones = estadoDatosPrincipal.campeones, // Lista de campeones
+                        cargando = estadoDatosPrincipal.cargando // Estado de carga
                     )
                 }
             }
@@ -208,11 +208,11 @@ fun BrintedApp() {
             composable(Ruta.Esports.ruta) { // Composable de la pantalla de esports
                 Box(modifier = Modifier.padding(padding)) { // Contenedor con padding
                     EsportsScreen( // Composable de la pantalla de esports
-                        noticias = datosState.noticias, // Lista de noticias de esports
-                        cargando = datosState.cargando, // Estado de carga
+                        noticias = estadoDatosPrincipal.noticias, // Lista de noticias de esports
+                        cargando = estadoDatosPrincipal.cargando, // Estado de carga
                         onVerNoticia = { noticia -> // Acción al ver una noticia
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(noticia.url)) // Crea un intent para abrir la URL de la noticia
-                            context.startActivity(intent) // Inicia la actividad para ver la noticia en el navegador
+                            contextoActual.startActivity(intent) // Inicia la actividad para ver la noticia en el navegador
                         }
                     )
                 }
@@ -222,16 +222,16 @@ fun BrintedApp() {
             composable(
                 route = Ruta.DetallePartida.ruta, // Ruta de la pantalla de detalle de partida
                 arguments = listOf(navArgument("partidaId") { type = NavType.StringType }) // Argumento de la ruta: ID de la partida
-            ) { backStack -> // Composable de la pantalla de detalle de partida
-                val partidaId = backStack.arguments?.getString("partidaId").orEmpty() // Obtiene el ID de la partida de los argumentos
-                val detalle = datosState.detallePartida // Detalle de la partida desde el estado de datos
-                val detalleError = datosState.detalleError // Error al cargar el detalle de la partida desde el estado de datos
-                val detalleCargando = datosState.detalleCargando // Estado de carga del detalle de la partida desde el estado de datos
+            ) { entradaPila -> // Composable de la pantalla de detalle de partida
+                val partidaId = entradaPila.arguments?.getString("partidaId").orEmpty() // Obtiene el ID de la partida de los argumentos
+                val detalle = estadoDatosPrincipal.detallePartida // Detalle de la partida desde el estado de datos
+                val detalleError = estadoDatosPrincipal.detalleError // Error al cargar el detalle de la partida desde el estado de datos
+                val detalleCargando = estadoDatosPrincipal.detalleCargando // Estado de carga del detalle de la partida desde el estado de datos
                 LaunchedEffect(partidaId) { // Efecto secundario para cargar el detalle de la partida cuando cambia el ID
                     if (detalle == null && !detalleCargando) { // Si no hay detalle cargado y no está cargando
-                        val region = authState.usuario?.region ?: "euw1" // Obtiene la región del usuario o usa "euw1" por defecto
-                        val invocador = authState.usuario?.nombreInvocador ?: "" // Obtiene el nombre del invocador del usuario o usa una cadena vacía por defecto
-                        homeViewModel.cargarDetalle(partidaId, region, invocador) // Carga el detalle de la partida
+                        val region = estadoLogin.usuario?.region ?: "euw1" // Obtiene la región del usuario o usa "euw1" por defecto
+                        val invocador = estadoLogin.usuario?.nombreInvocador ?: "" // Obtiene el nombre del invocador del usuario o usa una cadena vacía por defecto
+                        modeloVistaHome.cargarDetalle(partidaId, region, invocador) // Carga el detalle de la partida
                     }
                 }
 
@@ -255,9 +255,9 @@ fun BrintedApp() {
                                 ) {
                                     Text(detalleError, color = GrisTexto) // Muestra el mensaje de error
                                     Button(onClick = { // Acción al hacer clic en el botón de reintento
-                                        val region = authState.usuario?.region ?: "euw1" // Obtiene la región del usuario o usa "euw1" por defecto
-                                        val invocador = authState.usuario?.nombreInvocador ?: "" // Obtiene el nombre del invocador del usuario o usa una cadena vacía por defecto
-                                        homeViewModel.cargarDetalle(partidaId, region, invocador) // Vuelve a cargar el detalle de la partida
+                                        val region = estadoLogin.usuario?.region ?: "euw1" // Obtiene la región del usuario o usa "euw1" por defecto
+                                        val invocador = estadoLogin.usuario?.nombreInvocador ?: "" // Obtiene el nombre del invocador del usuario o usa una cadena vacía por defecto
+                                        modeloVistaHome.cargarDetalle(partidaId, region, invocador) // Vuelve a cargar el detalle de la partida
                                     }) {
                                         Text("Reintentar") // Texto del botón de reintento
                                     }
@@ -283,15 +283,15 @@ fun BrintedApp() {
 
 @Composable
 // Composable para la barra de navegación inferior
-private fun BarraNavegacion(rutaActual: String?, onNavigate: (Ruta) -> Unit) { // Función de navegación al seleccionar un elemento
+private fun BarraNavegacion(rutaActual: String?, BarraNavegacion: (Ruta) -> Unit) { // Función de navegación al seleccionar un elemento
     NavigationBar(containerColor = FondoNav) { // Barra de navegación con color de fondo personalizado
-        itemsNavegacion.forEach { item -> // Itera sobre los elementos de navegación
-            val seleccionado = rutaActual == item.ruta.ruta // Verifica si el elemento está seleccionado
+        itemsNavegacion.forEach { elemento -> // Itera sobre los elementos de navegación
+            val seleccionado = rutaActual == elemento.ruta.ruta // Verifica si el elemento está seleccionado
             NavigationBarItem( // Elemento de la barra de navegación
                 selected = seleccionado, // Estado seleccionado
-                onClick = { onNavigate(item.ruta) }, // Acción al hacer clic en el elemento
-                icon = { androidx.compose.material3.Icon(item.icono, contentDescription = item.etiqueta) }, // Icono del elemento
-                label = { Text(item.etiqueta, maxLines = 1) }, // Etiqueta del elemento
+                onClick = { BarraNavegacion(elemento.ruta) }, // Acción al hacer clic en el elemento
+                icon = { androidx.compose.material3.Icon(elemento.icono, contentDescription = elemento.etiqueta) }, // Icono del elemento
+                label = { Text(elemento.etiqueta, maxLines = 1) }, // Etiqueta del elemento
                 colors = NavigationBarItemDefaults.colors( // Colores personalizados para el elemento
                     selectedIconColor = Morado, // Color del icono seleccionado
                     selectedTextColor = Morado, // Color del texto seleccionado

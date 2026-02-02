@@ -63,8 +63,8 @@ fun RegistroScreen(
                     valor = correo.value, // Valor actual del campo
                     onValueChange = { correo.value = it }, // Actualiza el valor al cambiar
                     label = "Correo electrónico", // Etiqueta del campo
-                    placeholder = "tu.email@ejemplo.com", // Texto de ejemplo
-                    leading = { Icon(Icons.Outlined.Email, null, tint = GrisTexto) } // Icono al inicio del campo
+                    sugerencia = "tu.email@ejemplo.com", // Texto de ejemplo
+                    iconoInicio = { Icon(Icons.Outlined.Email, null, tint = GrisTexto) } // Icono al inicio del campo
                 )
                 Spacer(modifier = Modifier.height(14.dp)) // Espacio vertical
                 Text("Contraseña", style = Tipografia.bodyMedium, color = GrisTexto) // Etiqueta del campo de contraseña
@@ -73,8 +73,8 @@ fun RegistroScreen(
                     valor = contrasena.value, // Valor actual del campo
                     onValueChange = { contrasena.value = it }, // Actualiza el valor al cambiar
                     label = "Contraseña", // Etiqueta del campo
-                    placeholder = "••••••••", // Texto de ejemplo
-                    leading = { Icon(Icons.Outlined.Lock, null, tint = GrisTexto) }, // Icono al inicio del campo
+                    sugerencia = "••••••••", // Texto de ejemplo
+                    iconoInicio = { Icon(Icons.Outlined.Lock, null, tint = GrisTexto) }, // Icono al inicio del campo
                     esPassword = true // Indica que es un campo de contraseña
                 )
                 Spacer(modifier = Modifier.height(14.dp)) // Espacio vertical
@@ -84,8 +84,8 @@ fun RegistroScreen(
                     valor = invocador.value, // Valor actual del campo
                     onValueChange = { invocador.value = it }, // Actualiza el valor al cambiar
                     label = "Tu nombre", // Etiqueta del campo
-                    placeholder = "Ej: Faker", // Texto de ejemplo
-                    leading = { Icon(Icons.Outlined.Person, null, tint = GrisTexto) } // Icono al inicio del campo
+                    sugerencia = "Ej: Faker", // Texto de ejemplo
+                    iconoInicio = { Icon(Icons.Outlined.Person, null, tint = GrisTexto) } // Icono al inicio del campo
                 )
                 Spacer(modifier = Modifier.height(14.dp)) // Espacio vertical
                 Text("Región", style = Tipografia.bodyMedium, color = GrisTexto) // Etiqueta del selector de región

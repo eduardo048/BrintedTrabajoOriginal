@@ -28,7 +28,7 @@ data class DatosUiState( // Estado inicial con valores por defecto
 )
 
 // ViewModel que maneja la lógica de negocio y el estado UI para la pantalla principal
-class HomeViewModel(private val riotRepositorio: RiotRepositorio) : ViewModel() {
+class modeloVistaHome(private val riotRepositorio: RiotRepositorio) : ViewModel() {
 
     private val _estado = MutableStateFlow(DatosUiState()) // Exposición del estado como StateFlow inmutable
     val estado: StateFlow<DatosUiState> = _estado.asStateFlow() // Exposición del estado como StateFlow inmutable
@@ -95,7 +95,7 @@ class HomeViewModel(private val riotRepositorio: RiotRepositorio) : ViewModel() 
             object : ViewModelProvider.Factory { // Implementación anónima de ViewModelProvider.Factory
                 @Suppress("UNCHECKED_CAST") // Supresión de advertencias de conversión de tipos
                 override fun <T : ViewModel> create(modelClass: Class<T>): T { // Función para crear una instancia del ViewModel
-                    return HomeViewModel(provider) as T // Creación y retorno de una instancia de HomeViewModel
+                    return modeloVistaHome(provider) as T // Creación y retorno de una instancia de HomeViewModel
                 }
             }
     }

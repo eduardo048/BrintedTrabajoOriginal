@@ -3,7 +3,7 @@ package com.example.brinted.ui.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.brinted.data.firebase.autentificacionRepo
+import com.example.brinted.data.firebase.AutentificacionRepo
 import com.example.brinted.data.model.Usuario
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,22 +15,22 @@ import kotlinx.coroutines.launch
 //Sirve para representar el estado actual de la interfaz de usuario en relación con la autenticación
 // Contiene información sobre el usuario autenticado, si hay una operación en progreso y cualquier mensaje de error
 // Es inmutable para garantizar que el estado no se modifique directamente desde fuera del ViewModel
-data class AuthUiState(
+data class EstadoUiAuth(
     val usuario: Usuario? = null,  // Usuario autenticado
     val cargando: Boolean = false, // Indica si una operación está en progreso
     val error: String? = null      // Mensaje de error si ocurre algún problema
 )
 
 // ViewModel para manejar la lógica de autenticación
-class AuthViewModel(private val repository: autentificacionRepo) : ViewModel() { // Inyección del repositorio de autenticación
+class ModeloVistaAuth(private val repositorio: AutentificacionRepo) : ViewModel() { // Inyección del repositorio de autenticación
 
-    private val _estado = MutableStateFlow(AuthUiState()) // Estado mutable interno
-    val estado: StateFlow<AuthUiState> = _estado.asStateFlow() // Exposición del estado como inmutable
+    private val _estado = MutableStateFlow(EstadoUiAuth()) // Estado mutable interno
+    val estado: StateFlow<EstadoUiAuth> = _estado.asStateFlow() // Exposición del estado como inmutable
 
     init { // Observa los cambios en el estado de la sesión
         viewModelScope.launch { // Lanzamiento de una coroutine en el scope del ViewModel
-            repository.estadoSesion.collect { user -> // Colección del flujo de estado de sesión
-                _estado.update { it.copy(usuario = user) } // Actualización del estado con el usuario actual
+            repositorio.estadoSesion.collect { usuario -> // Colección del flujo de estado de sesión
+                _estado.update { it.copy(usuario = usuario) } // Actualización del estado con el usuario actual
             }
         }
     }
@@ -45,8 +45,8 @@ class AuthViewModel(private val repository: autentificacionRepo) : ViewModel() {
         // Inicia el proceso de registro
         viewModelScope.launch { // Lanzamiento de una coroutine en el scope del ViewModel
             _estado.update { it.copy(cargando = true, error = null) } // Actualiza el estado para indicar que se está cargando
-            val res = repository.registrar(correo, contrasena, invocador, region) // Llama al repositorio para registrar al usuario
-            res.fold( // Manejo del resultado
+            val resultado = repositorio.registrar(correo, contrasena, invocador, region) // Llama al repositorio para registrar al usuario
+            resultado.fold( // Manejo del resultado
                 onSuccess = { _estado.update { it.copy(cargando = false) } }, // En caso de éxito, actualiza el estado para indicar que ya no se está cargando
                 onFailure = { e -> _estado.update { it.copy(cargando = false, error = e.message) } } // En caso de fallo, actualiza el estado con el mensaje de error
             )
@@ -57,8 +57,8 @@ class AuthViewModel(private val repository: autentificacionRepo) : ViewModel() {
     fun iniciarSesion(correo: String, contrasena: String) { // Validación de campos
         viewModelScope.launch { // Lanzamiento de una coroutine en el scope del ViewModel
             _estado.update { it.copy(cargando = true, error = null) } // Actualiza el estado para indicar que se está cargando
-            val res = repository.iniciarSesion(correo, contrasena) // Llama al repositorio para iniciar sesión
-            res.fold( // Manejo del resultado
+            val resultado = repositorio.iniciarSesion(correo, contrasena) // Llama al repositorio para iniciar sesión
+            resultado.fold( // Manejo del resultado
                 onSuccess = { _estado.update { it.copy(cargando = false) } }, // En caso de éxito, actualiza el estado para indicar que ya no se está cargando
                 onFailure = { e -> _estado.update { it.copy(cargando = false, error = e.message) } } // En caso de fallo, actualiza el estado con el mensaje de error
             )
@@ -67,16 +67,16 @@ class AuthViewModel(private val repository: autentificacionRepo) : ViewModel() {
 
     // Función para cerrar sesión
     fun cerrarSesion() { // Llama al repositorio para cerrar sesión
-        repository.cerrarSesion() // Llama al repositorio para cerrar sesión
+        repositorio.cerrarSesion() // Llama al repositorio para cerrar sesión
     }
 
-    // Factory para crear instancias de AuthViewModel con el repositorio inyectado
+    //Factory para crear instancias de ModeloVistaAuth con el repositorio inyectado
     companion object {
-        fun factory(repository: autentificacionRepo): ViewModelProvider.Factory =
+        fun factory(repository: AutentificacionRepo): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory { // Implementación de ViewModelProvider.Factory
                 override fun <T : ViewModel> create(modelClass: Class<T>): T { // Creación del ViewModel
                     @Suppress("UNCHECKED_CAST")  // Supresión de la advertencia de conversión no verificada
-                    return AuthViewModel(repository) as T // Retorna una nueva instancia de AuthViewModel
+                    return ModeloVistaAuth(repository) as T // Retorna una nueva instancia de AuthViewModel
                 }
             }
     }

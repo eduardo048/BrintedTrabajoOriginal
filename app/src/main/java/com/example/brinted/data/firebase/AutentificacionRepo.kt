@@ -17,13 +17,13 @@ import kotlinx.coroutines.tasks.await
 // Proporciona funciones para registrar, iniciar sesión, cerrar sesión y observar el estado de la sesión del usuario
 // Utiliza Firebase Authentication y Firestore para almacenar y recuperar datos de usuarios
 // Emite el estado de la sesión del usuario como un flujo de datos
-class autentificacionRepo(
+class AutentificacionRepo(
     private val auth: FirebaseAuth = Firebase.auth, // Instancia de FirebaseAuth
     private val firestore: FirebaseFirestore = Firebase.firestore // Instancia de FirebaseFirestore
 ) {
 
     val estadoSesion: Flow<Usuario?> = callbackFlow { // Flujo que emite el estado de la sesión del usuario
-        val escuchar = FirebaseAuth.AuthStateListener { firebaseAuth ->// Escucha los cambios en el estado de autenticación
+        val escuchadorAuth = FirebaseAuth.AuthStateListener { firebaseAuth ->// Escucha los cambios en el estado de autenticación
             val usuario = firebaseAuth.currentUser // Obtiene el usuario actual
             if (usuario != null) { // Si hay un usuario autenticado
                 launch {
@@ -38,8 +38,8 @@ class autentificacionRepo(
                 trySend(null) // Envía null al flujo
             }
         }
-        auth.addAuthStateListener(escuchar) // Agrega el listener al FirebaseAuth
-        awaitClose { auth.removeAuthStateListener(escuchar) } // Elimina el listener cuando el flujo se cierra
+        auth.addAuthStateListener(escuchadorAuth) // Agrega el listener al FirebaseAuth
+        awaitClose { auth.removeAuthStateListener(escuchadorAuth) } // Elimina el listener cuando el flujo se cierra
     }
 
     // Función para registrar un nuevo usuario
