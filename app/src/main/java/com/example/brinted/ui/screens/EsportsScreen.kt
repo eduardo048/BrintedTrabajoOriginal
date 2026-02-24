@@ -18,39 +18,39 @@ import com.example.brinted.ui.theme.Fondo
 import com.example.brinted.ui.theme.GrisTexto
 import com.example.brinted.ui.theme.Tipografia
 
-/** Pantalla de eSports: lista noticias y permite abrir la URL origen. */
+// Pantalla de noticias de Esports que muestra una lista de noticias de Esports
 @Composable
-fun EsportsScreen(
-    noticias: List<NoticiaEsport>,
-    cargando: Boolean,
-    onVerNoticia: (NoticiaEsport) -> Unit
+fun EsportsScreen( // Pantalla de noticias de Esports
+    noticias: List<NoticiaEsport>, // Lista de noticias de Esports
+    cargando: Boolean, // Indicador de carga
+    onVerNoticia: (NoticiaEsport) -> Unit // Acción a realizar al hacer clic en una noticia
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Fondo)
-            .padding(16.dp)
+    LazyColumn( // Lista perezosa para el contenido
+        modifier = Modifier // Aplicación del modificador
+            .fillMaxSize() // Ocupa todo el espacio disponible
+            .background(Fondo) // Fondo de la pantalla
+            .padding(16.dp) // Espaciado interno
     ) {
-        item { Text("eSports", style = Tipografia.headlineMedium, color = Color.White) }
+        item { Text("eSports", style = Tipografia.headlineMedium, color = Color.White) } // Título de la pantalla
         
-        if (cargando) {
-            item {
-                Spacer(modifier = Modifier.height(6.dp))
-                Text("Cargando noticias...", style = Tipografia.bodyMedium, color = GrisTexto)
+        if (cargando) { // Si está cargando datos
+            item { // Mensaje de carga
+                Spacer(modifier = Modifier.height(6.dp)) // Espacio entre el título y el mensaje
+                Text("Cargando noticias...", style = Tipografia.bodyMedium, color = GrisTexto) // Texto de carga
             }
         }
         
-        if (noticias.isEmpty() && !cargando) {
-            item {
-                Spacer(modifier = Modifier.height(6.dp))
-                Text("No hay noticias disponibles.", style = Tipografia.bodyMedium, color = GrisTexto)
+        if (noticias.isEmpty() && !cargando) { // Si no hay noticias y no está cargando
+            item { // Mensaje de no hay noticias
+                Spacer(modifier = Modifier.height(6.dp)) // Espacio entre el título y el mensaje
+                Text("No hay noticias disponibles.", style = Tipografia.bodyMedium, color = GrisTexto) // Texto de no hay noticias
             }
-        } else {
-            items(noticias) { noticia ->
-                NoticiaCard(noticia = noticia, onClick = onVerNoticia)
+        } else { // Si hay noticias
+            items(noticias) { noticia -> // Itera sobre cada noticia
+                NoticiaCard(noticia = noticia, onClick = onVerNoticia) // Componente de tarjeta de noticia
             }
         }
         
-        item { Spacer(modifier = Modifier.height(32.dp)) }
+        item { Spacer(modifier = Modifier.height(32.dp)) } // Espacio inferior
     }
 }

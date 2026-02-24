@@ -23,63 +23,64 @@ import com.example.brinted.data.model.PartidaDetalle
 import com.example.brinted.data.model.ResultadoPartida
 import com.example.brinted.ui.theme.*
 
+// Pantalla de detalle de partida que muestra los detalles de una partida en particular
 @Composable
-fun PartidaDetalleScreen(detalle: PartidaDetalle, onBack: () -> Unit) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().background(Fondo).padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+fun PartidaDetalleScreen(detalle: PartidaDetalle, onBack: () -> Unit) { // Pantalla de detalle de partida
+    LazyColumn( // Lista perezosa para el contenido
+        modifier = Modifier.fillMaxSize().background(Fondo).padding(horizontal = 16.dp), // Aplicación del modificador
+        verticalArrangement = Arrangement.spacedBy(16.dp) // Espaciado vertical entre elementos
     ) {
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+        item { // Barra de navegación
+            Row( // Fila para el título y el botón de retroceso
+                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp), // Espaciado interno
+                verticalAlignment = Alignment.CenterVertically // Alineación vertical centrada
             ) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.Outlined.ArrowBack, "Atrás", tint = Color.White)
+                IconButton(onClick = onBack) { // Botón de retroceso
+                    Icon(Icons.Outlined.ArrowBack, "Atrás", tint = Color.White) // Ícono de retroceso
                 }
-                Text("Resumen de Partida", style = Tipografia.headlineSmall, color = Color.White)
+                Text("Resumen de Partida", style = Tipografia.headlineSmall, color = Color.White) // Título de la pantalla
             }
         }
 
-        // Card Principal (Blitz Style)
-        item {
-            Card(
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = FondoElevado)
+
+        item {// Detalle de la partida
+            Card( // Tarjeta para el detalle de la partida
+                shape = RoundedCornerShape(24.dp), // Bordes redondeados
+                colors = CardDefaults.cardColors(containerColor = FondoElevado) // Color de fondo de la tarjeta
             ) {
-                Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
-                    AsyncImage(
-                        model = detalle.icono,
-                        contentDescription = null,
-                        modifier = Modifier.size(70.dp).clip(RoundedCornerShape(12.dp)),
-                        contentScale = ContentScale.Crop
+                Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) { // Fila para el contenido
+                    AsyncImage( // Imagen del campeón
+                        model = detalle.icono, // URL de la imagen
+                        contentDescription = null, // Descripción para accesibilidad
+                        modifier = Modifier.size(70.dp).clip(RoundedCornerShape(12.dp)), // Tamaño y bordes redondeados
+                        contentScale = ContentScale.Crop // Escala la imagen para cubrir el área
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(detalle.campeonPrincipal, style = Tipografia.headlineSmall, color = Color.White)
-                        Text("Duración: ${detalle.duracion}", color = GrisTexto, style = Tipografia.bodySmall)
+                    Spacer(modifier = Modifier.width(16.dp)) // Espacio entre la imagen y el contenido
+                    Column(modifier = Modifier.weight(1f)) { // Columna para el contenido
+                        Text(detalle.campeonPrincipal, style = Tipografia.headlineSmall, color = Color.White) // Nombre del campeón
+                        Text("Duración: ${detalle.duracion}", color = GrisTexto, style = Tipografia.bodySmall) // Duración de la partida
                     }
-                    Column(horizontalAlignment = Alignment.End) {
-                        ResultadoChip(detalle.resultado)
-                        Text(detalle.kda, style = Tipografia.headlineSmall, color = Color.White, fontWeight = FontWeight.Bold)
+                    Column(horizontalAlignment = Alignment.End) { // Columna para el resultado y KDA
+                        ResultadoChip(detalle.resultado) // Chip de resultado
+                        Text(detalle.kda, style = Tipografia.headlineSmall, color = Color.White, fontWeight = FontWeight.Bold) // Texto de KDA
                     }
                 }
             }
         }
 
-        // Métricas Globales (Novedad)
-        if (detalle.metricasGlobales.isNotEmpty()) {
-            item {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    detalle.metricasGlobales.forEach { metrica ->
-                        Card(
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = FondoElevado)
+
+        if (detalle.metricasGlobales.isNotEmpty()) { // Si hay métricas globales
+            item { // Sección de métricas globales
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) { // Fila para las métricas globales
+                    detalle.metricasGlobales.forEach { metrica -> // Itera sobre cada métrica global
+                        Card( // Tarjeta para cada métrica global
+                            modifier = Modifier.weight(1f), // Ocupa el mismo espacio
+                            shape = RoundedCornerShape(16.dp), // Bordes redondeados
+                            colors = CardDefaults.cardColors(containerColor = FondoElevado) // Color de fondo de la tarjeta
                         ) {
-                            Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(metrica.titulo, style = Tipografia.labelSmall, color = GrisTexto)
-                                Text(metrica.valor, style = Tipografia.titleMedium, color = Color.White, fontWeight = FontWeight.Bold)
+                            Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) { // Columna para el contenido
+                                Text(metrica.titulo, style = Tipografia.labelSmall, color = GrisTexto) // Título de la métrica
+                                Text(metrica.valor, style = Tipografia.titleMedium, color = Color.White, fontWeight = FontWeight.Bold) // Valor de la métrica
                             }
                         }
                     }
@@ -87,31 +88,31 @@ fun PartidaDetalleScreen(detalle: PartidaDetalle, onBack: () -> Unit) {
             }
         }
 
-        item { Text("Equipos y Rendimiento", style = Tipografia.titleLarge, color = Color.White) }
+        item { Text("Equipos y Rendimiento", style = Tipografia.titleLarge, color = Color.White) } // Título de la sección de equipos y rendimiento
 
-        item { EquipoSection("Tus Aliados", detalle.aliados, true) }
-        item { EquipoSection("Enemigos", detalle.enemigos, false) }
+        item { EquipoSection("Tus Aliados", detalle.aliados, true) } // Sección de aliados
+        item { EquipoSection("Enemigos", detalle.enemigos, false) } // Sección de enemigos
 
-        item { Spacer(modifier = Modifier.height(24.dp)) }
+        item { Spacer(modifier = Modifier.height(24.dp)) } // Espacio inferior
     }
 }
 
 @Composable
-fun EquipoSection(titulo: String, jugadores: List<JugadorPartida>, esAliado: Boolean) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = titulo, 
-            color = if (esAliado) Morado else RojoDerrota, 
-            style = Tipografia.labelLarge,
-            fontWeight = FontWeight.Bold
+fun EquipoSection(titulo: String, jugadores: List<JugadorPartida>, esAliado: Boolean) { // Componente de sección de equipo
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) { // Columna para el contenido
+        Text( // Texto del título
+            text = titulo,  // Texto a mostrar
+            color = if (esAliado) Morado else RojoDerrota,  // Color del texto
+            style = Tipografia.labelLarge, // Estilo del texto
+            fontWeight = FontWeight.Bold // Negrita
         )
-        Card(
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = FondoElevado)
+        Card( // Tarjeta para el equipo
+            shape = RoundedCornerShape(20.dp), // Bordes redondeados
+            colors = CardDefaults.cardColors(containerColor = FondoElevado) // Color de fondo de la tarjeta
         ) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                jugadores.forEach { jugador ->
-                    JugadorRow(jugador)
+            Column(modifier = Modifier.padding(8.dp)) { // Columna para el contenido
+                jugadores.forEach { jugador -> // Itera sobre cada jugador
+                    JugadorRow(jugador) // Componente de fila de jugador
                 }
             }
         }
@@ -119,48 +120,48 @@ fun EquipoSection(titulo: String, jugadores: List<JugadorPartida>, esAliado: Boo
 }
 
 @Composable
-fun JugadorRow(jugador: JugadorPartida) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+fun JugadorRow(jugador: JugadorPartida) { // Componente de fila de jugador
+    Row( // Fila para el contenido
+        modifier = Modifier // Aplicación del modificador
+            .fillMaxWidth() // Ocupa todo el ancho disponible
+            .padding(8.dp), // Espaciado interno
+        verticalAlignment = Alignment.CenterVertically // Alineación vertical centrada
     ) {
-        AsyncImage(
-            model = "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/${jugador.campeon}.png",
-            contentDescription = null,
-            modifier = Modifier
-                .size(42.dp)
-                .clip(CircleShape)
-                .border(1.dp, Color.White.copy(alpha = 0.1f), CircleShape),
-            contentScale = ContentScale.Crop
+        AsyncImage( // Imagen del jugador
+            model = "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/${jugador.campeon}.png", // URL de la imagen
+            contentDescription = null, // Descripción para accesibilidad
+            modifier = Modifier // Aplicación del modificador
+                .size(42.dp) // Tamaño fijo
+                .clip(CircleShape) // Bordes redondeados
+                .border(1.dp, Color.White.copy(alpha = 0.1f), CircleShape), // Borde blanco con transparencia
+            contentScale = ContentScale.Crop // Escala la imagen para cubrir el área
         )
-        Spacer(modifier = Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(jugador.nombre, style = Tipografia.bodyMedium, color = Color.White, maxLines = 1)
-            Text("${jugador.rol} · KDA ${jugador.kda}", style = Tipografia.bodySmall, color = GrisTexto)
+        Spacer(modifier = Modifier.width(12.dp)) // Espacio entre la imagen y el contenido
+        Column(modifier = Modifier.weight(1f)) { // Columna para el contenido
+            Text(jugador.nombre, style = Tipografia.bodyMedium, color = Color.White, maxLines = 1) // Nombre del jugador
+            Text("${jugador.rol} · KDA ${jugador.kda}", style = Tipografia.bodySmall, color = GrisTexto) // Rol y KDA del jugador
         }
-        Column(horizontalAlignment = Alignment.End) {
-            Text(jugador.dano, style = Tipografia.bodyMedium, color = Color.White, fontWeight = FontWeight.Bold)
-            Text("Daño", style = Tipografia.labelSmall, color = GrisTexto)
+        Column(horizontalAlignment = Alignment.End) { // Columna para el contenido
+            Text(jugador.dano, style = Tipografia.bodyMedium, color = Color.White, fontWeight = FontWeight.Bold) // Dano del jugador
+            Text("Daño", style = Tipografia.labelSmall, color = GrisTexto) // Texto de daño
         }
     }
 }
 
 @Composable
-private fun ResultadoChip(resultado: ResultadoPartida) {
-    val esVictoria = resultado == ResultadoPartida.VICTORIA
-    val color = if (esVictoria) VerdeVictoria else RojoDerrota
-    Surface(
-        color = color.copy(alpha = 0.15f),
-        shape = RoundedCornerShape(8.dp)
+private fun ResultadoChip(resultado: ResultadoPartida) { // Componente de chip de resultado
+    val esVictoria = resultado == ResultadoPartida.VICTORIA // Indica si es victoria o derrota
+    val color = if (esVictoria) VerdeVictoria else RojoDerrota // Color del chip
+    Surface( // Superficie para el chip
+        color = color.copy(alpha = 0.15f), // Fondo con transparencia
+        shape = RoundedCornerShape(8.dp) // Bordes redondeados
     ) {
-        Text(
-            text = if (esVictoria) "VICTORIA" else "DERROTA",
-            color = color,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = Tipografia.labelSmall,
-            fontWeight = FontWeight.Bold
+        Text( // Texto del chip
+            text = if (esVictoria) "VICTORIA" else "DERROTA", // Texto a mostrar
+            color = color, // Color del texto
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), // Espaciado interno
+            style = Tipografia.labelSmall, // Estilo del texto
+            fontWeight = FontWeight.Bold // Negrita
         )
     }
 }

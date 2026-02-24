@@ -34,204 +34,206 @@ import com.example.brinted.ui.components.SeccionTitulo
 import com.example.brinted.ui.home.DatosUiState
 import com.example.brinted.ui.theme.*
 
-/** Pantalla de Inicio/Dashboard con resumen del invocador real. */
+// Pantalla principal de la aplicación que muestra el resumen del dashboard
 @Composable
-fun DashboardScreen(
-    estado: DatosUiState,
-    onVerPartida: (PartidaResumen) -> Unit,
-    onRefresh: () -> Unit,
-    onLogout: () -> Unit
+fun DashboardScreen( // Pantalla principal de la aplicación que muestra el resumen del dashboard
+    estado: DatosUiState, // Estado actual de la pantalla
+    onVerPartida: (PartidaResumen) -> Unit, // Acción a realizar al hacer clic en una partida
+    onRefresh: () -> Unit, // Acción a realizar al hacer clic en el botón de refrescar
+    onLogout: () -> Unit // Acción a realizar al hacer clic en el botón de cerrar sesión
 ) {
-    val menuAbierto = remember { mutableStateOf(false) }
+    val menuAbierto = remember { mutableStateOf(false) } // Estado del menú desplegable
 
-    if (estado.cargando && estado.dashboard == null) {
-        Box(modifier = Modifier.fillMaxSize().background(Fondo), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Morado)
+
+    if (estado.cargando && estado.dashboard == null) { // Si hay datos cargando
+        Box(modifier = Modifier.fillMaxSize().background(Fondo), contentAlignment = Alignment.Center) { // Contenedor centrado
+            CircularProgressIndicator(color = Morado) // Indicador de carga
         }
-        return
+        return // Salir de la función
     }
 
-    val dashboard = estado.dashboard ?: return
+    val dashboard = estado.dashboard ?: return // Dashboard no nulo
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Fondo)
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+
+    LazyColumn( // Lista perezosa para el contenido
+        modifier = Modifier // Aplicación del modificador
+            .fillMaxSize() // Ocupa todo el espacio disponible
+            .background(Fondo) // Fondo de la pantalla
+            .padding(horizontal = 16.dp), // Espaciado horizontal
+        verticalArrangement = Arrangement.spacedBy(16.dp) // Espaciado vertical entre elementos
     ) {
-        item { Spacer(modifier = Modifier.height(8.dp)) }
+        item { Spacer(modifier = Modifier.height(8.dp)) } // Espacio superior
         
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        item { // Encabezado
+            Row( // Fila para el encabezado
+                modifier = Modifier.fillMaxWidth(), // Ocupa todo el ancho disponible
+                horizontalArrangement = Arrangement.SpaceBetween, // Espaciado entre elementos
+                verticalAlignment = Alignment.CenterVertically // Alineación vertical centrada
             ) {
-                Column {
-                    Text("¡Hola, ${dashboard.invocador.nombreInvocador.split("#")[0]}!", 
-                        style = Tipografia.headlineMedium, color = Color.White)
-                    Text("Resumen de tu cuenta", style = Tipografia.bodyMedium, color = GrisTexto)
+                Column { // Columna para el texto
+                    Text("¡Hola, ${dashboard.invocador.nombreInvocador.split("#")[0]}!", // Texto de saludo
+                        style = Tipografia.headlineMedium, color = Color.White)  // Estilo del texto
+                    Text("Resumen de tu cuenta", style = Tipografia.bodyMedium, color = GrisTexto) // Texto de resumen
                 }
-                IconButton(onClick = { menuAbierto.value = true }) {
-                    Icon(Icons.Outlined.MoreVert, null, tint = Morado)
-                    DropdownMenu(expanded = menuAbierto.value, onDismissRequest = { menuAbierto.value = false }) {
-                        DropdownMenuItem(
-                            text = { Text("Refrescar") },
-                            onClick = { menuAbierto.value = false; onRefresh() },
-                            leadingIcon = { Icon(Icons.Outlined.Refresh, null) }
+                IconButton(onClick = { menuAbierto.value = true }) { // Botón de menú desplegable
+                    Icon(Icons.Outlined.MoreVert, null, tint = Morado) // Icono del menú
+                    DropdownMenu(expanded = menuAbierto.value, onDismissRequest = { menuAbierto.value = false }) { // Menú desplegable
+                        DropdownMenuItem( // Elemento del menú
+                            text = { Text("Refrescar") }, // Texto del elemento
+                            onClick = { menuAbierto.value = false; onRefresh() }, // Acción al hacer clic
+                            leadingIcon = { Icon(Icons.Outlined.Refresh, null) } // Icono del elemento
                         )
-                        DropdownMenuItem(
-                            text = { Text("Cerrar sesión") },
-                            onClick = { menuAbierto.value = false; onLogout() },
-                            leadingIcon = { Icon(Icons.Outlined.ExitToApp, null) }
+                        DropdownMenuItem( // Elemento del menú
+                            text = { Text("Cerrar sesión") }, // Texto del elemento
+                            onClick = { menuAbierto.value = false; onLogout() }, // Acción al hacer clic
+                            leadingIcon = { Icon(Icons.Outlined.ExitToApp, null) } // Icono del elemento
                         )
                     }
                 }
             }
         }
 
-        item {
-            Card(
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = FondoElevado),
-                modifier = Modifier.fillMaxWidth()
+        item { // Hero de Dashboard
+            Card( // Tarjeta
+                shape = RoundedCornerShape(24.dp), // Esquinas redondeadas
+                colors = CardDefaults.cardColors(containerColor = FondoElevado), // Color de fondo
+                modifier = Modifier.fillMaxWidth() // Ocupa todo el ancho
             ) {
-                Row(
-                    modifier = Modifier.padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Row( // Fila para el hero
+                    modifier = Modifier.padding(20.dp), // Espaciado interno
+                    verticalAlignment = Alignment.CenterVertically // Alineación vertical centrada
                 ) {
-                    Box {
-                        AsyncImage(
-                            model = "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/${(dashboard.estadisticas.nivel % 20)}.png",
-                            contentDescription = null,
-                            modifier = Modifier.size(80.dp).clip(CircleShape),
-                            contentScale = ContentScale.Crop
+                    Box { // Contenedor para la imagen
+                        AsyncImage( // Imagen del invocador
+                            model = "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/${(dashboard.estadisticas.nivel % 20)}.png", // URL de la imagen
+                            contentDescription = null, // Descripción para accesibilidad
+                            modifier = Modifier.size(80.dp).clip(CircleShape), // Tamaño y forma de la imagen
+                            contentScale = ContentScale.Crop // Escala la imagen para cubrir el área
                         )
-                        Surface(
-                            modifier = Modifier.align(Alignment.BottomCenter).offset(y = 8.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            color = Morado
+                        Surface( // Indicador de nivel
+                            modifier = Modifier.align(Alignment.BottomCenter).offset(y = 8.dp), // Posición y espaciado
+                            shape = RoundedCornerShape(10.dp), // Esquinas redondeadas
+                            color = Morado // Color de fondO
                         ) {
-                            Text("${dashboard.estadisticas.nivel}", color = Color.White, 
-                                modifier = Modifier.padding(horizontal = 8.dp), style = Tipografia.labelSmall)
+                            Text("${dashboard.estadisticas.nivel}", color = Color.White,  // Texto del nivel
+                                modifier = Modifier.padding(horizontal = 8.dp), style = Tipografia.labelSmall) // Estilo del texto
                         }
                     }
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Column {
-                        Text(dashboard.invocador.nombreInvocador, style = Tipografia.headlineSmall, color = Color.White)
-                        Text("Win Rate: ${dashboard.estadisticas.tasaVictorias}%", color = Morado, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.width(20.dp)) // Espacio entre la imagen y el texto
+                    Column { // Columna para el texto
+                        Text(dashboard.invocador.nombreInvocador, style = Tipografia.headlineSmall, color = Color.White) // Nombre del invocador
+                        Text("Win Rate: ${dashboard.estadisticas.tasaVictorias}%", color = Morado, fontWeight = FontWeight.Bold) // Tasa de victorias
                     }
                 }
             }
         }
 
-        item {
-            Card(
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = FondoElevado),
-                modifier = Modifier.fillMaxWidth()
+        item { // Estadísticas
+            Card(  //Tarjeta
+                shape = RoundedCornerShape(18.dp), // Esquinas redondeadas
+                colors = CardDefaults.cardColors(containerColor = FondoElevado), // Color de fondo
+                modifier = Modifier.fillMaxWidth() // Ocupa todo el ancho
             ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Estadísticas", style = Tipografia.headlineSmall, color = Color.White)
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier.height(250.dp)
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) { // Columna para el contenido
+                    Text("Estadísticas", style = Tipografia.headlineSmall, color = Color.White) // Texto de Estadisticas
+                    LazyVerticalGrid( // Lista de estadísticas en formato de cuadrícula
+                        columns = GridCells.Fixed(2), // Dos columnas
+                        horizontalArrangement = Arrangement.spacedBy(10.dp), // Espaciado horizontal entre elementos
+                        verticalArrangement = Arrangement.spacedBy(10.dp), // Espaciado vertical entre elementos
+                        modifier = Modifier.height(250.dp) // Altura fija
                     ) {
-                        gridItems(
-                            listOf(
-                                "KDA Promedio" to dashboard.estadisticas.kdaPromedio.toString(),
-                                "CS/min" to dashboard.estadisticas.csPorMin.toString(),
-                                "Oro" to String.format("%.1fk", dashboard.estadisticas.oroPromedio / 1000f),
-                                "Duración" to dashboard.estadisticas.duracionPromedio,
-                                "Racha" to "${dashboard.estadisticas.rachaVictorias} Victorias",
-                                "Mejor KDA" to dashboard.estadisticas.mejorKda
+                        gridItems( // Elementos de la lista
+                            listOf( // Lista de pares (título, valor)
+                                "KDA Promedio" to dashboard.estadisticas.kdaPromedio.toString(), // Par de elementos
+                                "CS/min" to dashboard.estadisticas.csPorMin.toString(), // Par de elementos
+                                "Oro" to String.format("%.1fk", dashboard.estadisticas.oroPromedio / 1000f), // Par de elementos
+                                "Duración" to dashboard.estadisticas.duracionPromedio, // Par de elementos
+                                "Racha" to "${dashboard.estadisticas.rachaVictorias} Victorias", // Par de elementos
+                                "Mejor KDA" to dashboard.estadisticas.mejorKda // Par de elementos
                             )
-                        ) { (titulo, valor) ->
-                            StatMiniCard(titulo = titulo, valor = valor)
+                        ) { (titulo, valor) -> // Iterar sobre cada par de elementos
+                            StatMiniCard(titulo = titulo, valor = valor) // Componente de tarjeta
                         }
                     }
                 }
             }
         }
 
-        if (dashboard.campeones.isNotEmpty()) {
-            item { SeccionTitulo("Tus Mejores Campeones") }
-            item {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(bottom = 8.dp)
+        if (dashboard.campeones.isNotEmpty()) { // Si hay campeones
+            item { SeccionTitulo("Tus Mejores Campeones") } // Título de la sección
+            item { // Lista de campeones
+                LazyRow( // Lista perezosa para el contenido
+                    horizontalArrangement = Arrangement.spacedBy(12.dp), // Espaciado horizontal entre elementos
+                    contentPadding = PaddingValues(bottom = 8.dp) // Espaciado inferior
                 ) {
-                    items(dashboard.campeones) { campeon ->
-                        ChampionCard(campeon.nombre, campeon.winRate, campeon.imagen)
+                    items(dashboard.campeones) { campeon -> // Iterar sobre cada campeón
+                        ChampionCard(campeon.nombre, campeon.winRate, campeon.imagen) // Componente de tarjeta de campeón
                     }
                 }
             }
         }
 
-        item { SeccionTitulo("Últimas Partidas") }
-        items(dashboard.partidas) { partida ->
-            PartidaItem(partida = partida, onClick = onVerPartida)
+        item { SeccionTitulo("Últimas Partidas") } // Título de la sección
+        items(dashboard.partidas) { partida -> // Iterar sobre cada partida
+            PartidaItem(partida = partida, onClick = onVerPartida) // Componente de partida
         }
         
-        item { Spacer(modifier = Modifier.height(24.dp)) }
+        item { Spacer(modifier = Modifier.height(24.dp)) } // Espacio inferior
     }
 }
 
 @Composable
-private fun StatMiniCard(titulo: String, valor: String) {
-    Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF161C29)),
-        modifier = Modifier.fillMaxWidth()
+private fun StatMiniCard(titulo: String, valor: String) { // Componente de tarjeta de estadística
+    Card( // Tarjeta
+        shape = RoundedCornerShape(14.dp), // Esquinas redondeadas
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF161C29)), // Color de fondo
+        modifier = Modifier.fillMaxWidth() // Ocupa todo el ancho
     ) {
-        Column(
-            modifier = Modifier.padding(vertical = 12.dp, horizontal = 14.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+        Column( // Columna para el contenido
+            modifier = Modifier.padding(vertical = 12.dp, horizontal = 14.dp), // Espaciado interno
+            verticalArrangement = Arrangement.spacedBy(6.dp) // Espaciado vertical entre elementos
         ) {
-            Text(titulo, style = Tipografia.bodyMedium, color = GrisTexto)
-            Text(valor, style = Tipografia.headlineMedium, color = Color.White)
+            Text(titulo, style = Tipografia.bodyMedium, color = GrisTexto) // Texto de título
+            Text(valor, style = Tipografia.headlineMedium, color = Color.White) // Texto de valor
         }
     }
 }
 
 @Composable
-fun ChampionCard(nombre: String, winRate: Int, imagen: String) {
+fun ChampionCard(nombre: String, winRate: Int, imagen: String) { // Componente de tarjeta de campeón
     Card(
-        shape = RoundedCornerShape(20.dp),
-        modifier = Modifier.width(120.dp),
-        colors = CardDefaults.cardColors(containerColor = FondoElevado)
+        shape = RoundedCornerShape(20.dp), // Esquinas redondeadas
+        modifier = Modifier.width(120.dp), // Ancho fijo
+        colors = CardDefaults.cardColors(containerColor = FondoElevado) // Color de fondo
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp, horizontal = 8.dp)
+        Column( // Columna para el contenido
+            horizontalAlignment = Alignment.CenterHorizontally, // Alineación horizontal centrada
+            modifier = Modifier // Aplicación del modificador
+                .fillMaxWidth() // Ocupa todo el ancho disponible
+                .padding(vertical = 16.dp, horizontal = 8.dp) // Espaciado interno
         ) {
-            AsyncImage(
-                model = imagen,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
+            AsyncImage( // Imagen del campeón
+                model = imagen, // URL de la imagen
+                contentDescription = null, // Descripción para accesibilidad
+                modifier = Modifier // Aplicación del modificador
+                    .size(64.dp) // Tamaño fijo
+                    .clip(CircleShape), // Forma circular
+                contentScale = ContentScale.Crop // Escala la imagen para cubrir el área
             )
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = nombre, 
-                style = Tipografia.labelLarge, 
-                color = Color.White, 
-                maxLines = 1,
-                textAlign = TextAlign.Center
+            Spacer(modifier = Modifier.height(10.dp)) // Espacio entre la imagen y el texto
+            Text( // Texto del nombre del campeón
+                text = nombre,  // Texto del nombre del campeón
+                style = Tipografia.labelLarge,  // Estilo del texto
+                color = Color.White,  // Color del texto
+                maxLines = 1, // Máximo una línea
+                textAlign = TextAlign.Center // Alineación del texto
             )
-            Text(
-                text = "$winRate% WR", 
-                style = Tipografia.bodySmall, 
-                color = Morado,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+            Text( // Texto de la tasa de victorias
+                text = "$winRate% WR", // Texto de la tasa de victorias
+                style = Tipografia.bodySmall,  // Estilo del texto
+                color = Morado, // Color del texto
+                fontWeight = FontWeight.Bold, // Peso fuerte del texto
+                textAlign = TextAlign.Center // Alineación del texto
             )
         }
     }

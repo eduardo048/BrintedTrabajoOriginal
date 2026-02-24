@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+// @ts-ignore
 import cors from "cors";
 
 type Region = "br1" | "eun1" | "euw1" | "jp1" | "kr" | "la1" | "la2" | "na1" | "oc1" | "ru" | "tr1";
@@ -44,7 +45,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/dashboard", async (req: Request, res: Response) => {
+app.get("/api/dashboard", async (req: Request, res: Response): Promise<any> => {
   try {
     const { invocador, region } = req.query as { invocador: string, region: Region };
     const data = await getCoreData(invocador, region, 10);
@@ -68,6 +69,14 @@ app.get("/api/dashboard", async (req: Request, res: Response) => {
       champs[p.championName].p++; if (p.win) champs[p.championName].w++;
     });
 
+    // Calcular racha de victorias actual
+    let rachaActual = 0;
+    for (const m of data.matches) {
+      const p = m.info.participants.find((x: any) => x.puuid === data.account.puuid);
+      if (p && p.win) rachaActual++;
+      else break;
+    }
+
     const count = data.matches.length || 1;
     return res.json({
       invocador: { id: data.sum.id, nombreInvocador: invocador, region },
@@ -75,7 +84,7 @@ app.get("/api/dashboard", async (req: Request, res: Response) => {
         kdaPromedio: parseFloat(((tK + tA) / Math.max(1, tD)).toFixed(2)),
         csPorMin: parseFloat((tCS / Math.max(1, tDur / 60)).toFixed(1)),
         oroPromedio: Math.round(tG / count),
-        rachaVictorias: 0, tasaVictorias: Math.round((tW / count) * 100),
+        rachaVictorias: rachaActual, tasaVictorias: Math.round((tW / count) * 100),
         nivel: data.sum.summonerLevel || 0, mejorKda: bestKdaStr, duracionPromedio: `${Math.floor((tDur / count) / 60)}m`
       },
       campeones: Object.values(champs).map((c: any) => ({
@@ -87,10 +96,10 @@ app.get("/api/dashboard", async (req: Request, res: Response) => {
           return { id: m.metadata.matchId, campeon: p.championName, resultado: p.win ? "VICTORIA" : "DERROTA", kda: `${p.kills}/${p.deaths}/${p.assists}`, duracion: `${Math.floor(m.info.gameDuration / 60)}m`, hace: "Reciente", icono: `https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/${p.championName}.png` };
       }).slice(0, 5)
     });
-  } catch (e: any) { res.status(500).json({ error: e.message }); }
+  } catch (e: any) { return res.status(500).json({ error: e.message }); }
 });
 
-app.get("/api/analisis", async (req: Request, res: Response) => {
+app.get("/api/analisis", async (req: Request, res: Response): Promise<any> => {
   try {
     const { invocador, region } = req.query as { invocador: string, region: Region };
     const data = await getCoreData(invocador, region, 10);
@@ -128,10 +137,10 @@ app.get("/api/analisis", async (req: Request, res: Response) => {
       ],
       insights
     });
-  } catch (e) { res.status(500).json({ error: "Error" }); }
+  } catch (e) { return res.status(500).json({ error: "Error" }); }
 });
 
-app.get("/api/campeones", async (req: Request, res: Response) => {
+app.get("/api/campeones", async (req: Request, res: Response): Promise<any> => {
     try {
       const { invocador, region } = req.query as { invocador: string, region: Region };
       const data = await getCoreData(invocador, region, 20);
@@ -152,7 +161,7 @@ app.get("/api/campeones", async (req: Request, res: Response) => {
     } catch (e) { return res.json([]); }
 });
 
-app.get("/api/detalle", async (req: Request, res: Response) => {
+app.get("/api/detalle", async (req: Request, res: Response): Promise<any> => {
     try {
       const { partidaId, region, invocador } = req.query as { partidaId: string, region: Region, invocador: string };
       const cluster = matchCluster[region] || "europe";
@@ -174,7 +183,7 @@ app.get("/api/detalle", async (req: Request, res: Response) => {
               { titulo: "Oro de Partida", valor: (oroTotal / 1000).toFixed(1) + "K" }
           ] 
       });
-    } catch (e) { res.status(500).json({ error: "Error" }); }
+    } catch (e) { return res.status(500).json({ error: "Error" }); }
 });
 
 app.get("/api/noticias", (_req, res) => res.json([
@@ -183,7 +192,7 @@ app.get("/api/noticias", (_req, res) => res.json([
   { id: "3", titulo: "Notas del Parche 14.3", descripcion: "Ajustes a campeones de la jungla y mejoras a tiradores.", imagen: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg", url: "https://lolesports.com" }
 ]));
 
-app.get("/api/historial", async (req: Request, res: Response) => {
+app.get("/api/historial", async (req: Request, res: Response): Promise<any> => {
     try {
       const { invocador, region } = req.query as { invocador: string, region: Region };
       const data = await getCoreData(invocador, region, 15);

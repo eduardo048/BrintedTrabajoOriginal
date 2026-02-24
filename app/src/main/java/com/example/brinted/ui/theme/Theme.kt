@@ -50,7 +50,7 @@ fun BrintedTheme(
             
             systemUiController.setStatusBarColor(
                 color = Morado,
-                darkIcons = false // Iconos claros sobre el lila
+                darkIcons = false
             )
             systemUiController.setNavigationBarColor(
                 color = Morado,

@@ -39,129 +39,129 @@ import com.example.brinted.ui.theme.Tipografia
 import com.example.brinted.ui.theme.VerdeVictoria
 import androidx.compose.ui.layout.ContentScale
 
-/** Pantalla de historial: lista partidas recientes y navega al detalle al pulsar. */
+// Pantalla de historial de partidas que muestra una lista de partidas con sus detalles
 @Composable
-fun HistorialScreen(
-    partidas: List<PartidaResumen>,
-    cargando: Boolean,
-    onClickPartida: (PartidaResumen) -> Unit
+fun HistorialScreen( // Pantalla de historial de partidas
+    partidas: List<PartidaResumen>, // Lista de partidas a mostrar
+    cargando: Boolean, // Indicador de carga de datos
+    onClickPartida: (PartidaResumen) -> Unit // Acción a realizar al hacer clic en una partida
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Fondo)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+    LazyColumn( // Lista perezosa para el contenido
+        modifier = Modifier // Aplicación del modificador
+            .fillMaxSize() // Ocupa todo el espacio disponible
+            .background(Fondo) // Fondo de la pantalla
+            .padding(16.dp), // Espaciado interno
+        verticalArrangement = Arrangement.spacedBy(14.dp) // Espaciado vertical entre elementos
     ) {
-        item {
-            Text("Historial", style = Tipografia.headlineMedium, color = Color.White)
-            Text("Analiza tus últimas partidas", style = Tipografia.bodyMedium, color = GrisTexto, fontStyle = FontStyle.Italic)
+        item { // Información de la pantalla
+            Text("Historial", style = Tipografia.headlineMedium, color = Color.White) // Título de la pantalla
+            Text("Analiza tus últimas partidas", style = Tipografia.bodyMedium, color = GrisTexto, fontStyle = FontStyle.Italic) // Subtítulo de la pantalla
         }
-        if (cargando) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
+        if (cargando) { // Si está cargando datos
+            item { // Indicador de carga
+                Box( // Contenedor centrado
+                    modifier = Modifier // Aplicación del modificador
+                        .fillMaxWidth() // Ocupa todo el ancho disponible
+                        .padding(16.dp), // Espaciado interno
+                    contentAlignment = Alignment.Center // Alineación vertical y horizontal centrada
                 ) {
-                    CircularProgressIndicator(color = Color.White)
+                    CircularProgressIndicator(color = Color.White) // Indicador de carga
                 }
             }
         }
-        listItems(partidas) { partida ->
-            HistorialCard(partida, onClickPartida)
+        listItems(partidas) { partida -> // Itera sobre cada partida
+            HistorialCard(partida, onClickPartida) // Componente de tarjeta de partida
         }
-        item { Spacer(modifier = Modifier.height(32.dp)) }
+        item { Spacer(modifier = Modifier.height(32.dp)) } // Espacio inferior
     }
 }
 
 @Composable
-private fun HistorialCard(partida: PartidaResumen, onClick: (PartidaResumen) -> Unit) {
+private fun HistorialCard(partida: PartidaResumen, onClick: (PartidaResumen) -> Unit) { // Componente de tarjeta de partida
     Card(
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F1521)),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .background(
-                Brush.linearGradient(
-                    listOf(Color(0x337C3AED), Color(0x11000000))
+        shape = RoundedCornerShape(18.dp), // Bordes redondeados
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F1521)), // Color de fondo de la tarjeta
+        modifier = Modifier // Aplicación del modificador
+            .fillMaxWidth() // Ocupa todo el ancho disponible
+            .padding(vertical = 4.dp) // Espaciado vertical
+            .background( // Fondo con degradado
+                Brush.linearGradient( // Degradado lineal
+                    listOf(Color(0x337C3AED), Color(0x11000000)) // Colores del degradado
                 ),
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(20.dp) // Bordes redondeados
             )
-            .clickable { onClick(partida) }
+            .clickable { onClick(partida) } // Acción al hacer clic en la tarjeta
     ) {
-        Row(
-            modifier = Modifier
-                .padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        Row( // Fila para el contenido
+            modifier = Modifier // Aplicación del modificador
+                .padding(14.dp), // Espaciado interno
+            verticalAlignment = Alignment.CenterVertically, // Alineación vertical centrada
+            horizontalArrangement = Arrangement.spacedBy(14.dp) // Espaciado horizontal entre elementos
         ) {
-            Box(
-                modifier = Modifier
-                    .size(72.dp)
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(
-                        Brush.linearGradient(
-                            listOf(Color(0x4D7C3AED), Color(0x2626C6DA))
+            Box( // Contenedor para la imagen
+                modifier = Modifier // Aplicación del modificador
+                    .size(72.dp) // Tamaño fijo
+                    .clip(RoundedCornerShape(18.dp)) // Bordes redondeados
+                    .background( // Fondo con degradado
+                        Brush.linearGradient( // Degradado lineal
+                            listOf(Color(0x4D7C3AED), Color(0x2626C6DA)) // Colores del degradado
                         )
                     )
-                    .padding(3.dp)
+                    .padding(3.dp) // Espaciado interno
             ) {
-                AsyncImage(
-                    model = partida.icono,
-                    contentDescription = partida.campeon,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(15.dp))
-                        .background(Color(0xFF0C1220))
+                AsyncImage( // Imagen de la partida
+                    model = partida.icono, // URL de la imagen
+                    contentDescription = partida.campeon, // Descripción para accesibilidad
+                    contentScale = ContentScale.Crop, // Escala la imagen para cubrir el área
+                    modifier = Modifier // Aplicación del modificador
+                        .fillMaxSize() // Ocupa todo el espacio
+                        .clip(RoundedCornerShape(15.dp)) // Bordes redondeados
+                        .background(Color(0xFF0C1220)) // Color de fondo
                 )
             }
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) { // Columna para el contenido
+                Row( // Fila para el nombre del campeón y el resultado
+                    modifier = Modifier.fillMaxWidth(), // Ocupa todo el ancho disponible
+                    verticalAlignment = Alignment.CenterVertically, // Alineación vertical centrada
+                    horizontalArrangement = Arrangement.SpaceBetween // Espaciado horizontal entre elementos
                 ) {
-                    Text(partida.campeon, style = Tipografia.bodyLarge, fontWeight = FontWeight.Bold, color = Color.White)
-                    ResultadoChip(partida.resultado)
+                    Text(partida.campeon, style = Tipografia.bodyLarge, fontWeight = FontWeight.Bold, color = Color.White) // Nombre del campeón
+                    ResultadoChip(partida.resultado) // Chip de resultado
                 }
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    BadgeTexto("KDA ${partida.kda}")
-                    BadgeTexto(partida.duracion)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) { // Fila para las métricas
+                    BadgeTexto("KDA ${partida.kda}") // Métricas
+                    BadgeTexto(partida.duracion) // Métricas
                 }
-                Text(partida.hace, style = Tipografia.bodyMedium, color = GrisTexto)
+                Text(partida.hace, style = Tipografia.bodyMedium, color = GrisTexto) // Texto de hace
             }
         }
     }
 }
 
 @Composable
-private fun ResultadoChip(resultado: ResultadoPartida) {
-    val color = if (resultado == ResultadoPartida.VICTORIA) VerdeVictoria else RojoDerrota
-    val texto = if (resultado == ResultadoPartida.VICTORIA) "Victoria" else "Derrota"
-    Text(
-        texto,
-        color = color,
-        style = Tipografia.labelMedium,
-        modifier = Modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(color.copy(alpha = 0.18f))
-            .padding(horizontal = 10.dp, vertical = 4.dp)
+private fun ResultadoChip(resultado: ResultadoPartida) { // Componente de chip de resultado
+    val color = if (resultado == ResultadoPartida.VICTORIA) VerdeVictoria else RojoDerrota // Color del chip
+    val texto = if (resultado == ResultadoPartida.VICTORIA) "Victoria" else "Derrota" // Texto del chip
+    Text( // Texto del chip
+        texto, // Texto a mostrar
+        color = color, // Color del texto
+        style = Tipografia.labelMedium, // Estilo del texto
+        modifier = Modifier // Aplicación del modificador
+            .clip(RoundedCornerShape(12.dp)) // Bordes redondeados
+            .background(color.copy(alpha = 0.18f)) // Fondo con bordes redondeados
+            .padding(horizontal = 10.dp, vertical = 4.dp) // Espaciado interno
     )
 }
 
 @Composable
-private fun BadgeTexto(texto: String) {
-    Text(
-        texto,
-        color = Color.White,
-        style = Tipografia.labelMedium,
-        modifier = Modifier
-            .clip(RoundedCornerShape(10.dp))
-            .background(Color(0xFF1A2434))
-            .padding(horizontal = 10.dp, vertical = 4.dp)
+private fun BadgeTexto(texto: String) { // Componente de texto con borde
+    Text( // Texto
+        texto, // Texto a mostrar
+        color = Color.White, // Color del texto
+        style = Tipografia.labelMedium, // Estilo del texto
+        modifier = Modifier // Aplicación del modificador
+            .clip(RoundedCornerShape(10.dp)) // Bordes redondeados
+            .background(Color(0xFF1A2434)) // Fondo con bordes redondeados
+            .padding(horizontal = 10.dp, vertical = 4.dp) // Espaciado interno
     )
 }

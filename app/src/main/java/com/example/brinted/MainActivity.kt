@@ -10,12 +10,12 @@ import com.example.brinted.ui.theme.BrintedTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
-        setContent {
-            BrintedTheme {
-                BrintedApp()
+        installSplashScreen() // Configura el splash screen
+        enableEdgeToEdge() // Habilita el modo de bordes para la actividad
+        super.onCreate(savedInstanceState) // Llama al método onCreate de la superclase
+        setContent { // Establece el contenido de la actividad
+            BrintedTheme { // Utiliza el tema personalizado
+                BrintedApp() // Componente principal de la aplicación
             }
         }
     }
