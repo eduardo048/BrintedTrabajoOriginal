@@ -10,7 +10,7 @@
         android:height="160dp"
         android:gravity="center">
         <bitmap
-            android:src="@drawable/splashn"
+            android:src="@drawable/splash"
             android:gravity="fill"/>
     </item>
 
